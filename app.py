@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.0 - Absolute All Tiers Fix", layout="wide")
+st.set_page_config(page_title="MAYA v48.0 - Strict Row Boundary Lock", layout="wide")
 
 # Custom CSS
 st.markdown("""
@@ -16,7 +16,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.0 (Complete Tiers & Shift Aligned Engine)")
+st.title("🎯 MAYA v48.0 (Boundary Lock Engine - Zero Value Shift)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -36,14 +36,20 @@ def generate_32_patterns(base_val):
         patterns.add(f"{(a + sa) % 10}{(b + sb) % 10}")
     return patterns
 
-# --- WORST GAPS SCANNER ---
+# --- WORST GAPS SCANNER (STRICT PAST LOCK) ---
 def find_worst_gaps_90(df, idx, col):
+    """
+    STRICT COMPLIANCE FIX: Loop strictly stop ho jayega idx-1 par.
+    Selected date (idx) ka koi bhi data is scan mein involve nahi hoga.
+    """
     gap_scores = {}
+    # Scan gaps from 1 to 90
     for g in range(1, 91):
-        if idx - g - 10 < 0: continue
+        if (idx - 1) - g - 10 < 0: continue
         score = 0
-        for check in range(idx-10, idx):
-            if check - g < 0: continue
+        # Loop strictly boundaries to past data only (stops before idx)
+        for check in range(idx - 11, idx):
+            if check - g < 0 or check == idx: continue
             pred = str(df.iloc[check-g].get(col, "XX")).split('.')[0]
             act = str(df.iloc[check].get(col, "XX")).split('.')[0]
             if pred.isdigit() and act.isdigit() and pred == act:
@@ -55,8 +61,9 @@ def find_worst_gaps_90(df, idx, col):
     bad_andar = []
     bad_bahar = []
     for wg in worst_gaps:
-        if idx - wg >= 0:
-            val = str(df.iloc[idx-wg].get(col, 0)).split('.')[0]
+        # Piche ke gaps se data extraction (strictly excluding active row)
+        if (idx - 1) - wg >= 0:
+            val = str(df.iloc[(idx - 1) - wg].get(col, 0)).split('.')[0]
             if val.isdigit():
                 bad_andar.append(int(val)//10)
                 bad_bahar.append(int(val)%10)
@@ -65,16 +72,15 @@ def find_worst_gaps_90(df, idx, col):
     final_b = max(set(bad_bahar), key=bad_bahar.count) if bad_bahar else 5
     return final_a, final_b, worst_gaps
 
-# --- ADVANCED LOGIC WITH TIME LINE LOCK ---
+# --- ADVANCED LOGIC WITH STRICT ROW ISOLATION ---
 def calculate_v48_logic(df, idx, shift):
     flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
     base_col = flow.get(shift, 'DS')
     
-    # CRITICAL TIMING FIX: DS aur SG ke liye hamesha row index-1 se hi calculations hongi
-    start_offset = 1 if shift in ['DS', 'SG'] else 0
-    
+    # LEVEL 1: Code 37 Base (64 Jodis)
+    # STRICT COMPLIANCE: Kal ki date (idx-1) se hi data uthana chalu hoga. Selected Row completely bypass.
     val = 0
-    for i in range(start_offset, start_offset + 15):
+    for i in range(1, 15):
         if idx - i >= 0:
             raw = df.iloc[idx-i].get(base_col, 0)
             if str(raw).isdigit() and int(raw) > 0:
@@ -94,7 +100,8 @@ def calculate_v48_logic(df, idx, shift):
     
     target_36 = [str(i).zfill(2) for i in range(100) if str(i).zfill(2) not in blocked_64]
     
-    wa, wb, wgaps = find_worst_gaps_90(df, idx - start_offset, base_col)
+    # LEVEL 2: Worst 90-Gap Filter (Locked to past rows)
+    wa, wb, wgaps = find_worst_gaps_90(df, idx, base_col)
     
     extra_hatao = set()
     for i in range(10):
@@ -103,7 +110,8 @@ def calculate_v48_logic(df, idx, shift):
         
     v48_stable = [j for j in target_36 if j not in extra_hatao]
     
-    prev_actual_val = str(df.iloc[idx - start_offset].get(base_col, 0)).split('.')[0] if (idx - start_offset) >= 0 else "0"
+    # LEVEL 3: 32-Pattern execution strictly tied to past actual row result
+    prev_actual_val = str(df.iloc[idx - 1].get(base_col, 0)).split('.')[0] if (idx - 1) >= 0 else "0"
     p32_set = generate_32_patterns(prev_actual_val)
     
     common_numbers = sorted(list(set([n for n in v48_stable if n in p32_set])))
