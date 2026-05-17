@@ -3,12 +3,13 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.0 - Perfect Match Engine", layout="wide")
+st.set_page_config(page_title="MAYA v48.0 - Next Day Predictor", layout="wide")
 
-# Custom CSS
+# Custom CSS for UI
 st.markdown("""
     <style>
-    .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
+    .live-res { background: #1e293b; color: #fbbf24; padding: 12px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; margin-bottom: 15px; }
+    .target-box { background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 10px; text-align: center; border: 2px solid #38bdf8; margin-bottom: 15px; font-weight: bold; }
     .grid-square { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 400px; margin: 10px auto; }
     .grid-item { background: #ffffff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; text-align: center; border: 2px solid #bfdbfe; }
     .worst-badge { background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px; border: 1px solid #fecaca; }
@@ -16,7 +17,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.0 (90-Gap Deep Scanner - Strict Value Lock)")
+st.title("🎯 MAYA v48.0 (Next-Day Prediction & Value Lock Engine)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -26,7 +27,6 @@ def generate_32_patterns(base_val):
     a, b = val // 10, val % 10
     patterns = set()
     
-    # 32 Fixed Mathematical Shifts Matrix
     shifts = [
         (1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1),
         (2, 0), (-2, 0), (0, 2), (0, -2), (2, 2), (-2, -2), (2, -2), (-2, 2),
@@ -37,9 +37,8 @@ def generate_32_patterns(base_val):
         patterns.add(f"{(a + sa) % 10}{(b + sb) % 10}")
     return patterns
 
-# --- WORST GAPS SCANNER ---
+# --- WORST GAPS SCANNER (90 GAPS) ---
 def find_worst_gaps_90(df, idx, col):
-    """1 se 90 tak ke gaps ko scan karke sabse bekar results nikalna"""
     gap_scores = {}
     for g in range(1, 91):
         if idx - g - 10 < 0: continue
@@ -67,17 +66,20 @@ def find_worst_gaps_90(df, idx, col):
     final_b = max(set(bad_bahar), key=bad_bahar.count) if bad_bahar else 5
     return final_a, final_b, worst_gaps
 
-# --- FIXED & ISOLATED CORE MATRIX LOGIC ---
-def calculate_v48_logic_frozen(df, target_idx, shift):
-    """Strictly isolated calculation based entirely on the target_idx row pointer"""
+# --- CORE LOGIC WITH 1-STEP DATE FORWARD LOCK ---
+def calculate_v48_next_day(df, base_idx, shift):
+    """
+    base_idx: Jis din ka data available hai (e.g., 15 Tarikh)
+    Calculation poori tarah base_idx par chalegi, jo agle din (16 Tarikh) ke liye valid hogi.
+    """
     flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
     base_col = flow.get(shift, 'DS')
     
-    # 1. Level 1: Code 37 Base (64 Jodis)
+    # Code 37 Base (64 Jodis) scanning backwards from base_idx
     val = 0
-    for i in range(1, 15):
-        if target_idx - i >= 0:
-            raw = df.iloc[target_idx-i].get(base_col, 0)
+    for i in range(0, 14): # Khade din se lekar piche tak scan
+        if base_idx - i >= 0:
+            raw = df.iloc[base_idx-i].get(base_col, 0)
             if str(raw).isdigit() and int(raw) > 0:
                 val = int(raw)
                 break
@@ -94,8 +96,8 @@ def calculate_v48_logic_frozen(df, target_idx, shift):
     
     target_36 = [str(i).zfill(2) for i in range(100) if str(i).zfill(2) not in blocked_64]
     
-    # 2. Level 2: Worst 90-Gap Filter
-    wa, wb, wgaps = find_worst_gaps_90(df, target_idx, base_col)
+    # Worst 90-Gap Filter based on base_idx
+    wa, wb, wgaps = find_worst_gaps_90(df, base_idx, base_col)
     
     extra_hatao = set()
     for i in range(10):
@@ -104,9 +106,9 @@ def calculate_v48_logic_frozen(df, target_idx, shift):
         
     v48_stable = [j for j in target_36 if j not in extra_hatao]
     
-    # 3. Level 3: 32-Pattern Generation & Splitting
-    prev_actual_val = str(df.iloc[target_idx-1].get(base_col, 0)).split('.')[0] if target_idx - 1 >= 0 else "0"
-    p32_set = generate_32_patterns(prev_actual_val)
+    # 32-Pattern Generation from base_idx result
+    current_actual_val = str(df.iloc[base_idx].get(base_col, 0)).split('.')[0]
+    p32_set = generate_32_patterns(current_actual_val)
     
     # Segregation Tiers
     common_numbers = sorted(list(set([n for n in v48_stable if n in p32_set])))
@@ -130,38 +132,46 @@ if uploaded_file:
     df.columns = [str(c).strip().upper() for c in df.columns]
     df = df.rename(columns={'FD': 'FB', 'GD': 'GB', 'FBD': 'FB', 'GZB': 'GB'})
     
-    sel_date = st.selectbox("📅 Date:", options=df['DATE'].astype(str).unique().tolist()[::-1])
+    # Date selection dropdown
+    all_dates = df['DATE'].astype(str).unique().tolist()
+    sel_date = st.selectbox("📅 Select Current Data Date:", options=all_dates[::-1])
     target_s = st.selectbox("🎰 Shift:", options=['DS', 'FB', 'GB', 'GL', 'DB', 'SG'])
     
-    idx = df[df['DATE'].astype(str) == sel_date].index[0]
+    base_idx = df[df['DATE'].astype(str) == sel_date].index[0]
     
-    # --- LIVE RESULT DISPLAY ---
-    live_val = str(df.iloc[idx].get(target_s, "XX")).split('.')[0]
-    st.markdown(f'<div class="live-res">RESULT FOR SELECTED DATE: <span style="font-size:30px; font-weight:bold;">{live_val}</span></div>', unsafe_allow_html=True)
+    # Finding next date for target label display
+    next_date_str = "Next Shift/Day"
+    if base_idx + 1 < len(df):
+        next_date_str = str(df.iloc[base_idx + 1]['DATE'])
+        
+    # --- LIVE RESULTS DISPLAY WITH CLEAR TARGETING ---
+    live_val = str(df.iloc[base_idx].get(target_s, "XX")).split('.')[0]
+    st.markdown(f'<div class="live-res">📂 Selected Base Date ({sel_date}) Result: <span style="font-size:24px; font-weight:bold;">{live_val}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="target-box">🚀 PREDICTION TARGET FOR DATE: <span style="font-size:26px; color:#fbbf24;">{next_date_str}</span></div>', unsafe_allow_html=True)
 
-    # --- CALCULATE WITH ISOLATED POINTER ---
-    res_dict = calculate_v48_logic_frozen(df, idx, target_s)
+    # --- CALCULATE WITH ISOLATED NEXT-DAY LOGIC ---
+    res_dict = calculate_v48_next_day(df, base_idx, target_s)
 
     st.divider()
-    st.write(f"⚠️ **Worst Gaps Found:** " + " ".join([f'<span class="worst-badge">Gap-{g}</span>' for g in res_dict['wgaps']]), unsafe_allow_html=True)
+    st.write(f"⚠️ **Worst Gaps Found (Based on {sel_date}):** " + " ".join([f'<span class="worst-badge">Gap-{g}</span>' for g in res_dict['wgaps']]), unsafe_allow_html=True)
 
     # --- TOTAL JODIS COUNTER MATRIX ---
     c_count = len(res_dict['common'])
     v_count = len(res_dict['uniq_v48'])
     p_count = len(res_dict['uniq_p32'])
-    st.markdown(f'<div class="total-summary">📊 Unicorn Summary Breakdown: Common ({c_count}) + Unique V48 ({v_count}) + Unique 32-Pattern ({p_count}) = {c_count + v_count + p_count} Active Jodis</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="total-summary"> Northampton Matrix: Common ({c_count}) + Unique V48 ({v_count}) + Unique 32-Pattern ({p_count}) = {c_count + v_count + p_count} Active Jodis</div>', unsafe_allow_html=True)
 
     # --- ORIGINAL SQUARE 16 & SQUARE 9 BOXES ---
     col_left, col_right = st.columns(2)
     with col_left:
-        st.write("**✅ Stable Target (Square 16)**")
+        st.write(f"**✅ Stable Target for {next_date_str} (Square 16)**")
         grid_html = '<div class="grid-square">'
         for j in res_dict['t16']: grid_html += f'<div class="grid-item">{j}</div>'
         grid_html += '</div>'
         st.markdown(grid_html, unsafe_allow_html=True)
 
     with col_right:
-        st.write("**💎 Super Hit (Square 9)**")
+        st.write(f"**💎 Super Hit for {next_date_str} (Square 9)**")
         grid_html = '<div class="grid-square" style="grid-template-columns: repeat(3, 1fr);">'
         for j in res_dict['t9']: grid_html += f'<div class="grid-item" style="background:#fff7ed; color:#9a3412; border-color:#fed7aa;">{j}</div>'
         grid_html += '</div>'
@@ -171,49 +181,50 @@ if uploaded_file:
     st.divider()
     tc1, tc2, tc3 = st.columns(3)
     with tc1:
-        st.info("💎 **Common (Matching Both)**")
+        st.info("💎 **Common Tiers**")
         st.write(res_dict['common'] if res_dict['common'] else "No Commons")
     with tc2:
-        st.success("📦 **Unique V48 Gaps Only**")
+        st.success("📦 **Unique V48 Gaps**")
         st.write(res_dict['uniq_v48'])
     with tc3:
-        st.warning("🌀 **Unique 32-Pattern Only**")
+        st.warning("🌀 **Unique 32-Pattern**")
         st.write(res_dict['uniq_p32'])
 
-    # --- 100% PERFECTLY MATCHING BACKTEST HISTORY ---
+    # --- PERFECT ALIGNED BACKTEST ENGINE ---
     st.divider()
-    st.subheader("📜 10-Day Strict Deep Scan Backtest (100% Locked Alignment)")
-    st.caption("Yeh table real-time calculation lock karke chalti hai, yahan jo hit number dikhega woh exact wahi hoga jo us din prediction mein aaya tha.")
+    st.subheader("📜 10-Day Strict Next-Day Verification Backtest")
+    st.caption("Yeh history table 1-step date forward rule par locked hai. Har row pichle din ka data uthakar agle din ke result ko match karegi.")
     
     hist = []
-    for i in range(max(0, idx - 10), idx + 1):
-        # Passing 'i' as both current row and target row to eliminate lookahead index bleeding
-        h_res = calculate_v48_logic_frozen(df, i, target_s)
+    # Loop chalaenge history test karne ke liye
+    for i in range(max(0, base_idx - 10), base_idx + 1):
+        if i + 1 >= len(df): continue # Agla din nahi hai toh skip karein
+        
+        # Calculate prediction using day 'i' as base
+        h_res = calculate_v48_next_day(df, i, target_s)
+        
+        # Target day (i+1) ka real result kya khula, check karein
+        target_date_real = df.iloc[i + 1]['DATE']
+        actual_opened_raw = str(df.iloc[i + 1].get(target_s, "XX")).split('.')[0]
         
         hit_common = "❌"
         hit_v48 = "❌"
         hit_p32 = "❌"
         
-        # Checking actual results up to next 4 shifts window
-        for step in range(1, 5):
-            if i + step >= len(df): continue
-            future_raw = str(df.iloc[i + step].get(target_s, "XX")).split('.')[0]
-            if future_raw.isdigit():
-                f_val = str(int(future_raw)).zfill(2)
-                
-                if f_val in h_res['common'] and hit_common == "❌":
-                    hit_common = f"🎯 {f_val} (S{step})"
-                if f_val in h_res['uniq_v48'] and hit_v48 == "❌":
-                    hit_v48 = f"✅ {f_val} (S{step})"
-                if f_val in h_res['uniq_p32'] and hit_p32 == "❌":
-                    hit_p32 = f"⚡ {f_val} (S{step})"
+        if actual_opened_raw.isdigit():
+            f_val = str(int(actual_opened_raw)).zfill(2)
+            
+            if f_val in h_res['common']: hit_common = f"🎯 {f_val} (Pass)"
+            if f_val in h_res['uniq_v48']: hit_v48 = f"✅ {f_val} (Pass)"
+            if f_val in h_res['uniq_p32']: hit_p32 = f"⚡ {f_val} (Pass)"
                     
         hist.append({
-            "Date": df.iloc[i]['DATE'],
-            "Opened Result": str(df.iloc[i].get(target_s, "XX")).split('.')[0],
-            "Common Tier Hit": hit_common,
-            "Unique V48 Hit": hit_v48,
-            "Unique 32-Pattern Hit": hit_p32
+            "Base Data Date": df.iloc[i]['DATE'],
+            "Target Predict Date": target_date_real,
+            "Actual Result Opened": actual_opened_raw,
+            "Common Output Status": hit_common,
+            "Unique V48 Status": hit_v48,
+            "Unique 32-Pattern Status": hit_p32
         })
         
     st.table(pd.DataFrame(hist))
