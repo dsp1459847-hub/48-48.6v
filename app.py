@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.0 - Absolute Shift Fix", layout="wide")
+st.set_page_config(page_title="MAYA v48.0 - Absolute All Tiers Fix", layout="wide")
 
 # Custom CSS
 st.markdown("""
@@ -16,7 +16,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.0 (Shift Sequence Sequence Lock)")
+st.title("🎯 MAYA v48.0 (Complete Tiers & Shift Aligned Engine)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -70,8 +70,7 @@ def calculate_v48_logic(df, idx, shift):
     flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
     base_col = flow.get(shift, 'DS')
     
-    # CRITICAL TIMING FIX: DS aur SG ke liye same row ka data validation strict block kiya
-    # Agar target shift DS ya SG hai, toh baseline hamesha index-1 (pichle din) se hi scan shuru karegi
+    # CRITICAL TIMING FIX: DS aur SG ke liye hamesha row index-1 se hi calculations hongi
     start_offset = 1 if shift in ['DS', 'SG'] else 0
     
     val = 0
@@ -95,7 +94,6 @@ def calculate_v48_logic(df, idx, shift):
     
     target_36 = [str(i).zfill(2) for i in range(100) if str(i).zfill(2) not in blocked_64]
     
-    # Gap scanning baseline adjustment
     wa, wb, wgaps = find_worst_gaps_90(df, idx - start_offset, base_col)
     
     extra_hatao = set()
@@ -105,7 +103,6 @@ def calculate_v48_logic(df, idx, shift):
         
     v48_stable = [j for j in target_36 if j not in extra_hatao]
     
-    # 32-Pattern processing aligned to time block
     prev_actual_val = str(df.iloc[idx - start_offset].get(base_col, 0)).split('.')[0] if (idx - start_offset) >= 0 else "0"
     p32_set = generate_32_patterns(prev_actual_val)
     
@@ -180,18 +177,34 @@ if uploaded_file:
         st.warning("🌀 **Unique 32-Pattern**")
         st.write(res_dict['uniq_p32'])
 
-    # --- BACKTEST SELECTION ---
+    # --- THE FIXED BACKTEST TABLE WITH ALL THREE TEAMS DISPLAYED ---
     st.divider()
-    st.subheader("📜 10-Day Deep Scan Backtest")
+    st.subheader("📜 10-Day Deep Scan Backtest (All 3 Tiers Broken Down)")
+    
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
         h_res = calculate_v48_logic(df, i, target_s)
         res = str(df.iloc[i].get(target_s, "XX")).split('.')[0]
-        status = "❌"
+        
+        hit_common = "❌"
+        hit_v48 = "❌"
+        hit_p32 = "❌"
+        
         if res.isdigit():
             rv = str(int(res)).zfill(2)
-            if rv in h_res['t9']: status = "💎 SUPER"
-            elif rv in h_res['t16']: status = "✅ HIT"
-        hist.append({"Date": df.iloc[i]['DATE'], "Result": res, "Status": status})
+            
+            # Har ek tier ke andar pass hua number track karo
+            if rv in h_res['common']: hit_common = f"🎯 {rv} (Pass)"
+            if rv in h_res['uniq_v48']: hit_v48 = f"✅ {rv} (Pass)"
+            if rv in h_res['uniq_p32']: hit_p32 = f"⚡ {rv} (Pass)"
+                    
+        hist.append({
+            "Date": df.iloc[i]['DATE'],
+            "Opened Result": res,
+            "Common Tier Result": hit_common,
+            "Unique V48 Result": hit_v48,
+            "Unique 32-Pattern Result": hit_p32
+        })
+        
     st.table(pd.DataFrame(hist))
     
