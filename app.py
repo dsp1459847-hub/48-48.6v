@@ -3,20 +3,18 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.8 - 18 Layer Universal Matrix", layout="wide")
+st.set_page_config(page_title="MAYA v48.9 - Inverse Universal Core", layout="wide")
 
-# Custom CSS
+# Custom CSS for Sleek UI Layout
 st.markdown("""
     <style>
     .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
-    .universal-box { background: #0f172a; color: #10b981; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #10b981; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
-    .grid-square { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 400px; margin: 10px auto; }
-    .grid-item { background: #ffffff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; text-align: center; border: 2px solid #bfdbfe; }
-    .worst-badge { background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px; border: 1px solid #fecaca; }
+    .universal-box { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #38bdf8; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
+    .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.8 (18-Layer Universal Common Scanner)")
+st.title("🎯 MAYA v48.9 (Inverse Universal Filter - Remaining Strike Engine)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -88,7 +86,7 @@ def calculate_v48_logic(df, idx, shift):
         for i in range(10): blocked_64.add(f"{i}{b}")
     
     target_36 = [str(i).zfill(2) for i in range(100) if str(i).zfill(2) not in blocked_64]
-    wa, wb, wgaps = find_worst_gaps_90(df, idx, base_col)
+    wa, wb, _ = find_worst_gaps_90(df, idx, base_col)
     
     extra_hatao = set()
     for i in range(10):
@@ -100,18 +98,30 @@ def calculate_v48_logic(df, idx, shift):
     prev_actual_val = str(df.iloc[idx - 1].get(base_col, 0)).split('.')[0] if (idx - 1) >= 0 else "0"
     p32_set = generate_32_patterns(prev_actual_val)
     
-    common_numbers = sorted(list(set([n for n in v48_stable if n in p32_set])))
-    uniq_v48 = sorted(list(set([n for n in v48_stable if n not in p32_set])))
-    uniq_p32 = sorted(list(set([n for n in p32_set if n not in v48_stable])))
+    common_numbers = [n for n in v48_stable if n in p32_set]
+    uniq_v48 = [n for n in v48_stable if n not in p32_set]
+    uniq_p32 = [n for n in p32_set if n not in v48_stable]
     
-    return {
-        "t16": v48_stable[:16],
-        "t9": v48_stable[:9],
-        "common": common_numbers,
-        "uniq_v48": uniq_v48,
-        "uniq_p32": uniq_p32,
-        "wgaps": wgaps
-    }
+    return {"common": common_numbers, "uniq_v48": uniq_v48, "uniq_p32": uniq_p32}
+
+# --- PROCESS CORE INVERSE MATRIX ---
+def calculate_inverse_universe(df, idx, shifts_list):
+    """Calculates full 18 layers frequency, blocks overlapping items, returns inverse pool"""
+    all_num_freq = {}
+    for s in shifts_list:
+        res_shift = calculate_v48_logic(df, idx, s)
+        for n in res_shift['common']: all_num_freq[n] = all_num_freq.get(n, 0) + 1
+        for n in res_shift['uniq_v48']: all_num_freq[n] = all_num_freq.get(n, 0) + 1
+        for n in res_shift['uniq_p32']: all_num_freq[n] = all_num_freq.get(n, 0) + 1
+
+    # Overlapping Core Numbers Set (Heavy Matrix Density Filter)
+    universal_commons = [k for k, v in all_num_freq.items() if v >= 4]
+    
+    # Inverse Core Calculation: Total 100 minus the Universal Overlaps
+    full_universe = [str(x).zfill(2) for x in range(100)]
+    remaining_pool = sorted([num for num in full_universe if num not in universal_commons])
+    
+    return remaining_pool, sorted(universal_commons)
 
 # --- DASHBOARD CONTROL ---
 uploaded_file = st.file_uploader("📂 Upload Excel Data Sheet", type=["xlsx", "csv"])
@@ -126,89 +136,58 @@ if uploaded_file:
     
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
     
-    # --- 18-LAYER UNIVERSAL SCANNER CRUNCHING ---
-    # Is block mein hum saari 6 shifts aur unke 3 tiers ka data ek sath nikaal rahe hain
-    all_numbers_frequency = {}
+    # Execute Matrix Calculations
+    remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     
-    for s in shifts_list:
-        res_shift = calculate_v48_logic(df, idx, s)
-        
-        # Jodne ke liye teeno Tiers ko combine karenge (18 layers tracking)
-        for n in res_shift['common']:
-            all_numbers_frequency[n] = all_numbers_frequency.get(n, 0) + 1
-        for n in res_shift['uniq_v48']:
-            all_numbers_frequency[n] = all_numbers_frequency.get(n, 0) + 1
-        for n in res_shift['uniq_p32']:
-            all_numbers_frequency[n] = all_numbers_frequency.get(n, 0) + 1
-
-    # Filter out numbers jo shifts ke andar heavy density overlap par hain
-    # High frequency check (Jaise jo numbers 4 ya usse zyada shifts ke patterns me overlap ho rhe hain)
-    universal_commons = [k for k, v in all_numbers_frequency.items() if v >= 4]
-    universal_commons = sorted(universal_commons)
-    
-    # --- DISPLAYING THE UNIVERSAL MATRIX RESULTS ---
+    # --- TOP INTERFACE DISPLAY PANEL ---
     st.markdown(f"""
     <div class="universal-box">
-         🛡️ UNIVERSAL CROSS-COMMON MATRIX: Selected Date ({sel_date}) par shifts ke overlapping se Total **{len(universal_commons)}** Jodis Filter hui hain.
+         🛡️ INVERSE UNIVERSAL FILTER MODE: Selected Date ({sel_date})<br>
+         Total Universe (100) - Universal Overlaps ({len(universal_blocked_pool)}) = Active Prediction Pool ({len(remaining_target_pool)} Jodis Remaining)
     </div>
     """, unsafe_allow_html=True)
     
-    if universal_commons:
-        st.write("**💎 Universal High-Overlap Jodis (Minimum 4+ Shift Crossings):**")
-        st.code(", ".join(universal_commons))
-    else:
-        st.warning("Is date par koi bhi high density universal common number nahi mila.")
-        
-    # --- SINGLE SHIFT DETAIL VIEW ---
-    st.divider()
-    st.subheader("🎰 Individual Shift Verification Panel")
-    selected_view_shift = st.selectbox("Select Shift to view Tiers:", options=shifts_list)
+    st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis ({len(universal_blocked_pool)}):</div>', unsafe_allow_html=True)
+    st.write(", ".join(universal_blocked_pool) if universal_blocked_pool else "No Blocked Numbers")
     
-    res_dict = calculate_v48_logic(df, idx, selected_view_shift)
-    
-    tc1, tc2, tc3 = st.columns(3)
-    with tc1:
-        st.info(f"💎 **{selected_view_shift} - Common Tiers**")
-        st.write(res_dict['common'] if res_dict['common'] else "No Commons")
-    with tc2:
-        st.success(f"📦 **{selected_view_shift} - Unique V48 Gaps**")
-        st.write(res_dict['uniq_v48'])
-    with tc3:
-        st.warning(f"🌀 **{selected_view_shift} - Unique 32-Pattern**")
-        st.write(res_dict['uniq_p32'])
+    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis ({len(remaining_target_pool)}):</div>', unsafe_allow_html=True)
+    st.code(", ".join(remaining_target_pool))
 
-    # --- THE COMPREHENSIVE BACKTEST TABLE FOR UNIVERSAL TIER ---
+    # --- THE COMPREHENSIVE BACKTEST TABLE WITH EXACT SAME-DAY SHIFT TARGETING ---
     st.divider()
-    st.subheader("📜 10-Day Universal Super-Filter Backtest Tracker")
-    st.caption("Yeh table track karti hai ki un 18 layers ke cross filtration se jo universal numbers nikle, unhone aage kya hit diya.")
+    st.subheader("📜 10-Day Strict Inverse Universal Validation Backtest")
+    st.caption("Yeh table track karti hai ki un 45-50 remaining jodis ke pool me se usi same day par kaun-kaun si shifts safalta purvak pass hoke nikli hain.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
-        # Calculate universal frequency for row 'i'
-        row_freq = {}
-        for s in shifts_list:
-            r_shift = calculate_v48_logic(df, i, s)
-            for n in r_shift['common']: row_freq[n] = row_freq.get(n, 0) + 1
-            for n in r_shift['uniq_v48']: row_freq[n] = row_freq.get(n, 0) + 1
-            for n in r_shift['uniq_p32']: row_freq[n] = row_freq.get(n, 0) + 1
-            
-        row_universal = [k for k, v in row_freq.items() if v >= 4]
+        # Calculate pool logic for historical row 'i'
+        row_remaining_pool, _ = calculate_inverse_universe(df, i, shifts_list)
         
-        # Check hitting across all shifts for that specific day
-        hit_details = []
+        passed_shifts_list = []
+        total_passed_count = 0
+        
+        # Cross checking all 6 shifts data for exact hit discovery on the same row record
         for s in shifts_list:
             actual_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
             if actual_val.isdigit():
                 av_pad = str(int(actual_val)).zfill(2)
-                if av_pad in row_universal:
-                    hit_details.append(f"{s}:{av_pad}")
+                if av_pad in row_remaining_pool:
+                    passed_shifts_list.append(f"🟢 {s} ({av_pad})")
+                    total_passed_count += 1
+                else:
+                    passed_shifts_list.append(f"❌ {s}")
                     
         hist.append({
-            "Date": df.iloc[i]['DATE'],
-            "Universal Generated Count": len(row_universal),
-            "Universal Numbers Set": ", ".join(row_universal) if row_universal else "None",
-            "Universal Hits Found On Same Day": ", ".join(hit_details) if hit_details else "❌"
+            "History Date": df.iloc[i]['DATE'],
+            "Remaining Jodis Count": len(row_remaining_pool),
+            "DS Status": passed_shifts_list[0],
+            "FB Status": passed_shifts_list[1],
+            "GB Status": passed_shifts_list[2],
+            "GL Status": passed_shifts_list[3],
+            "DB Status": passed_shifts_list[4],
+            "SG Status": passed_shifts_list[5],
+            "Total Shifts Passed": f"{total_passed_count} / 6 Shifts"
         })
         
     st.table(pd.DataFrame(hist))
-        
+    
