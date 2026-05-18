@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.9 - True Bold Grid Engine", layout="wide")
+st.set_page_config(page_title="MAYA v49.0 - 4-Tier Deep Pool Engine", layout="wide")
 
 # Custom CSS for Solid Chakor Grid Layout
 st.markdown("""
@@ -11,15 +11,22 @@ st.markdown("""
     .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
     .universal-box { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #38bdf8; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
     .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; font-size: 18px; color: #1e293b; }
+    .tier-bar { background: #eff6ff; padding: 10px; border-radius: 6px; border-left: 5px solid #3b82f6; margin: 10px 0; font-weight: bold; font-size: 16px; }
     
     /* Chakor Grid Styling */
     .grid-square-dynamic { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; width: 100%; margin: 15px 0; }
     .chakor-item-remaining { background: #dcfce7; color: #15803d; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #bbf7d0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .chakor-item-blocked { background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #fecaca; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    
+    /* Tier Boxes Layout */
+    .chakor-tier-16 { background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #bfdbfe; }
+    .chakor-tier-9 { background: #fef3c7; color: #92400e; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #fde68a; }
+    .chakor-tier-5 { background: #f3e8ff; color: #6b21a8; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #e9d5ff; }
+    .chakor-tier-1 { background: #fce7f3; color: #9d174d; padding: 15px; border-radius: 6px; font-size: 26px; font-weight: bold; text-align: center; border: 2px solid #fbcfe8; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.9 (Strict Chakor Grid & Bold Layout Lock)")
+st.title("🎯 MAYA v49.0 (4-Tier Deep Filter & Remaining Pool Machine)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -124,6 +131,44 @@ def calculate_inverse_universe(df, idx, shifts_list):
     
     return remaining_pool, sorted(universal_commons)
 
+# --- NEW 4-TIER CRUNCHER LOGIC FROM REMAINING POOL ---
+def calculate_4_tiers_from_pool(pool, df, idx, shift):
+    """Pool data ko niche scroll par process karne ka naya deep mathematical setup"""
+    flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
+    base_col = flow.get(shift, 'DS')
+    
+    # Core mathematical sorting factor extraction
+    prev_val = str(df.iloc[idx-1].get(base_col, 0)).split('.')[0] if idx-1 >=0 else "0"
+    p_num = int(prev_val) if prev_val.isdigit() else 0
+    lead_digit = str(p_num // 10)
+    end_digit = str(p_num % 10)
+    
+    # Tier 1: Stable 16 Extraction
+    t16 = [num for num in pool if num.startswith(lead_digit) or num.endswith(end_digit)]
+    if len(t16) < 16:
+        fillers = [x for x in pool if x not in t16]
+        t16.extend(fillers[:16 - len(t16)])
+    t16 = sorted(t16[:16])
+    
+    # Tier 2: Super Hit 9 Extraction
+    t9 = [n for n in t16 if (int(n)//10 + int(n)%10) % 2 == 0]
+    if len(t9) < 9:
+        fillers = [x for x in t16 if x not in t9]
+        t9.extend(fillers[:9 - len(t9)])
+    t9 = sorted(t9[:9])
+    
+    # Tier 3: VVIP 5 Extraction
+    t5 = [n for n in t9 if (int(n) % 5 == 0 or int(n) % 3 == 0)]
+    if len(t5) < 5:
+        fillers = [x for x in t9 if x not in t5]
+        t5.extend(fillers[:5 - len(t5)])
+    t5 = sorted(t5[:5])
+    
+    # Tier 4: Single Core Shot
+    t1 = [t5[0]] if t5 else ["00"]
+    
+    return t16, t9, t5, t1
+
 # --- DASHBOARD CONTROL ---
 uploaded_file = st.file_uploader("📂 Upload Excel Data Sheet", type=["xlsx", "csv"])
 
@@ -134,8 +179,9 @@ if uploaded_file:
     
     all_dates = df['DATE'].astype(str).unique().tolist()
     sel_date = st.selectbox("📅 Date:", options=all_dates[::-1])
-    idx = df[df['DATE'].astype(str) == sel_date].index[0]
+    target_s = st.selectbox("🎰 Select Shift for Deep Tiers:", options=['DS', 'FB', 'GB', 'GL', 'DB', 'SG'])
     
+    idx = df[df['DATE'].astype(str) == sel_date].index[0]
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
     
     # Execute Matrix Calculations
@@ -165,41 +211,68 @@ if uploaded_file:
     grid_remaining_html += '</div>'
     st.markdown(grid_remaining_html, unsafe_allow_html=True)
 
-    # --- THE COMPREHENSIVE BACKTEST TABLE (WITH COMPLETE BYPASS FIX & BOLD HTML RENDERING) ---
+    # --- SCROLL DOWN: THE DEEP POER FILTER MATRIX SHOTS ---
     st.divider()
-    st.subheader("📜 10-Day Strict Inverse Universal Validation Backtest")
-    st.caption("Yeh table track karti hai ki un remaining jodis ke pool me se usi same day par kaun-kaun si shifts safalta purvak pass hoke nikli hain.")
+    st.subheader("⬇️ SCROLL DOWN: THE 4-TIER SUB-POOL ANALYTICS ENGINE")
+    st.caption(f"Yahan aapka bacha hua pool further filter hokar high-power targets me transform ho chuka hai (Targeting Shift: <b>{target_s}</b>)")
+    
+    pool_16, pool_9, pool_5, pool_1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
+    
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown('<div class="tier-bar">✅ Pool Stable (16 Jodis)</div>', unsafe_allow_html=True)
+        g_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(4, 1fr); gap: 6px;">'
+        for num in pool_16: g_html += f'<div class="chakor-tier-16">{num}</div>'
+        g_html += '</div>'
+        st.markdown(g_html, unsafe_allow_html=True)
+        
+    with c2:
+        st.markdown('<div class="tier-bar" style="border-left-color: #f59e0b;">💎 Pool Super Hit (9 Jodis)</div>', unsafe_allow_html=True)
+        g_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">'
+        for num in pool_9: g_html += f'<div class="chakor-tier-9">{num}</div>'
+        g_html += '</div>'
+        st.markdown(g_html, unsafe_allow_html=True)
+        
+    with c3:
+        st.markdown('<div class="tier-bar" style="border-left-color: #a855f7;">🔥 Pool VVIP Target (5 Jodis)</div>', unsafe_allow_html=True)
+        g_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(1, 1fr); gap: 6px;">'
+        for num in pool_5: g_html += f'<div class="chakor-tier-5">{num}</div>'
+        g_html += '</div>'
+        st.markdown(g_html, unsafe_allow_html=True)
+        
+    with c4:
+        st.markdown('<div class="tier-bar" style="border-left-color: #ec4899;">👑 Pool Single Core Shot</div>', unsafe_allow_html=True)
+        g_html = f'<div class="chakor-tier-1">{pool_1[0]}</div>'
+        st.markdown(g_html, unsafe_allow_html=True)
+
+    # --- THE ADVANCED 4-TIER ACTIVE TABLE BACKTEST ---
+    st.divider()
+    st.subheader("📜 10-Day Deep Sub-Pool Validation Backtest")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
-        row_remaining_pool, _ = calculate_inverse_universe(df, i, shifts_list)
+        row_pool, _ = calculate_inverse_universe(df, i, shifts_list)
+        p16, p9, p5, p1 = calculate_4_tiers_from_pool(row_pool, df, i, target_s)
         
-        passed_shifts_map = {s: "❌" for s in shifts_list}
-        total_passed_count = 0
+        actual_opened = str(df.iloc[i].get(target_s, "XX")).split('.')[0]
         
-        for s in shifts_list:
-            if s in df.columns:
-                actual_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
-                if actual_val.isdigit():
-                    av_pad = str(int(actual_val)).zfill(2)
-                    if av_pad in row_remaining_pool:
-                        passed_shifts_map[s] = f"<span style='color:#16a34a; font-weight:bold;'>🟢 {s} ({av_pad})</span>"
-                        total_passed_count += 1
-                    else:
-                        passed_shifts_map[s] = f"<span style='color:#dc2626; font-weight:bold;'>❌ {s}</span>"
-            else:
-                passed_shifts_map[s] = f"<b>⚠️ Missing Col</b>"
-                    
+        h16, h9, h5, h1 = "❌", "❌", "❌", "❌"
+        
+        if actual_opened.isdigit():
+            av_pad = str(int(actual_opened)).zfill(2)
+            
+            if av_pad in p1: h1 = f"<span style='color:#ec4899; font-weight:bold;'>👑 {av_pad} (Pass)</span>"
+            if av_pad in p5: h5 = f"<span style='color:#a855f7; font-weight:bold;'>🔥 {av_pad} (Pass)</span>"
+            if av_pad in p9: h9 = f"<span style='color:#d97706; font-weight:bold;'>💎 {av_pad} (Pass)</span>"
+            if av_pad in p16: h16 = f"<span style='color:#2563eb; font-weight:bold;'>✅ {av_pad} (Pass)</span>"
+            
         hist.append({
             "History Date": f"<b>{df.iloc[i]['DATE']}</b>",
-            "Pool Count": f"<b>{len(row_remaining_pool)}</b>",
-            "DS Status": passed_shifts_map['DS'],
-            "FB Status": passed_shifts_map['FB'],
-            "GB Status": passed_shifts_map['GB'],
-            "GL Status": passed_shifts_map['GL'],
-            "DB Status": passed_shifts_map['DB'],
-            "SG Status": passed_shifts_map['SG'],
-            "Total Shifts Passed": f"<b>{total_passed_count} / 6 Shifts</b>"
+            "Actual Result": f"<b>{actual_opened}</b>",
+            "Stable 16 Status": h16,
+            "Super Hit 9 Status": h9,
+            "VVIP 5 Status": h5,
+            "Single Core Status": h1
         })
         
     df_hist = pd.DataFrame(hist)
