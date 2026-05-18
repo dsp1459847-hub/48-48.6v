@@ -3,18 +3,23 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.9 - High Visibility Engine", layout="wide")
+st.set_page_config(page_title="MAYA v48.9 - True Bold Grid Engine", layout="wide")
 
-# Custom CSS for Solid UI
+# Custom CSS for Solid Chakor Grid Layout
 st.markdown("""
     <style>
     .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
-    .universal-box { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #38bdf8; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
-    .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; font-size: 16px; }
+    .universal-box { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #38bdf8; font-weight: bold; font-size: 20px; margin-bottom: 20px; }
+    .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; font-size: 18px; color: #1e293b; }
+    
+    /* Chakor Grid Styling */
+    .grid-square-dynamic { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; width: 100%; margin: 15px 0; }
+    .chakor-item-remaining { background: #dcfce7; color: #15803d; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #bbf7d0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .chakor-item-blocked { background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #fecaca; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.9 (Strict Error Bypass & Bold Layout)")
+st.title("🎯 MAYA v48.9 (Strict Chakor Grid & Bold Layout Lock)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -136,31 +141,31 @@ if uploaded_file:
     # Execute Matrix Calculations
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     
-    # Bold Strings for UI Enhancement
-    bold_date = f"**{sel_date}**"
-    bold_total_universe = f"**100**"
-    bold_overlaps_count = f"**{len(universal_blocked_pool)}**"
-    bold_active_pool_count = f"**{len(remaining_target_pool)}**"
-    
     # --- TOP INTERFACE DISPLAY PANEL ---
     st.markdown(f"""
     <div class="universal-box">
-         🛡️ INVERSE UNIVERSAL FILTER MODE: Selected Date ({bold_date})<br>
-         Total Universe ({bold_total_universe}) - Universal Overlaps ({bold_overlaps_count}) = Active Prediction Pool ({bold_active_pool_count} Jodis Remaining)
+         🛡️ INVERSE UNIVERSAL FILTER MODE: Selected Date (<b>{sel_date}</b>)<br>
+         Total Universe (<b>100</b>) - Universal Overlaps (<b>{len(universal_blocked_pool)}</b>) = Active Prediction Pool (<b>{len(remaining_target_pool)} Jodis Remaining</b>)
     </div>
     """, unsafe_allow_html=True)
     
-    # Formatting Jodis with Bold tag for crystal clear view
-    bold_blocked_jodis = ", ".join([f"**{nj}**" for nj in universal_blocked_pool]) if universal_blocked_pool else "**No Blocked Numbers**"
-    bold_remaining_jodis = ", ".join([f"**{nj}**" for nj in remaining_target_pool])
+    # 1. BLOCKED UNIVERSAL JODIS CHAKOR GRID
+    st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis (<b>{len(universal_blocked_pool)}</b>):</div>', unsafe_allow_html=True)
+    grid_blocked_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
+    for j in universal_blocked_pool:
+        grid_blocked_html += f'<div class="chakor-item-blocked">{j}</div>'
+    grid_blocked_html += '</div>'
+    st.markdown(grid_blocked_html, unsafe_allow_html=True)
     
-    st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis ({bold_overlaps_count}):</div>', unsafe_allow_html=True)
-    st.write(bold_blocked_jodis, unsafe_allow_html=True)
-    
-    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis ({bold_active_pool_count}):</div>', unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:18px; letter-spacing:1px;'>{bold_remaining_jodis}</div>", unsafe_allow_html=True)
+    # 2. ACTIVE TARGET REMAINING JODIS CHAKOR GRID
+    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis (<b>{len(remaining_target_pool)}</b>):</div>', unsafe_allow_html=True)
+    grid_remaining_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
+    for j in remaining_target_pool:
+        grid_remaining_html += f'<div class="chakor-item-remaining">{j}</div>'
+    grid_remaining_html += '</div>'
+    st.markdown(grid_remaining_html, unsafe_allow_html=True)
 
-    # --- THE COMPREHENSIVE BACKTEST TABLE (WITH COMPLETE BYPASS FIX) ---
+    # --- THE COMPREHENSIVE BACKTEST TABLE (WITH COMPLETE BYPASS FIX & BOLD HTML RENDERING) ---
     st.divider()
     st.subheader("📜 10-Day Strict Inverse Universal Validation Backtest")
     st.caption("Yeh table track karti hai ki un remaining jodis ke pool me se usi same day par kaun-kaun si shifts safalta purvak pass hoke nikli hain.")
@@ -169,37 +174,34 @@ if uploaded_file:
     for i in range(max(0, idx - 10), idx + 1):
         row_remaining_pool, _ = calculate_inverse_universe(df, i, shifts_list)
         
-        # Dictionary structure tracking map based shift alignment
-        passed_shifts_map = {s: "**❌**" for s in shifts_list}
+        passed_shifts_map = {s: "❌" for s in shifts_list}
         total_passed_count = 0
         
-        # Cross checking all 6 shifts securely (Error Redundancy Proof)
         for s in shifts_list:
             if s in df.columns:
                 actual_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
                 if actual_val.isdigit():
                     av_pad = str(int(actual_val)).zfill(2)
                     if av_pad in row_remaining_pool:
-                        passed_shifts_map[s] = f"**🟢 {s} ({av_pad})**"
+                        passed_shifts_map[s] = f"<span style='color:#16a34a; font-weight:bold;'>🟢 {s} ({av_pad})</span>"
                         total_passed_count += 1
                     else:
-                        passed_shifts_map[s] = f"**❌ {s}**"
+                        passed_shifts_map[s] = f"<span style='color:#dc2626; font-weight:bold;'>❌ {s}</span>"
             else:
-                passed_shifts_map[s] = f"**⚠️ Missing Col**"
+                passed_shifts_map[s] = f"<b>⚠️ Missing Col</b>"
                     
         hist.append({
-            "History Date": f"**{df.iloc[i]['DATE']}**",
-            "Pool Count": f"**{len(row_remaining_pool)}**",
+            "History Date": f"<b>{df.iloc[i]['DATE']}</b>",
+            "Pool Count": f"<b>{len(row_remaining_pool)}</b>",
             "DS Status": passed_shifts_map['DS'],
             "FB Status": passed_shifts_map['FB'],
             "GB Status": passed_shifts_map['GB'],
             "GL Status": passed_shifts_map['GL'],
             "DB Status": passed_shifts_map['DB'],
             "SG Status": passed_shifts_map['SG'],
-            "Total Shifts Passed": f"**{total_passed_count} / 6 Shifts**"
+            "Total Shifts Passed": f"<b>{total_passed_count} / 6 Shifts</b>"
         })
         
-    # Generating clean Streamlit table structure safely mapped
     df_hist = pd.DataFrame(hist)
     st.write(df_hist.to_html(escape=False, index=False), unsafe_allow_html=True)
     
