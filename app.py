@@ -3,20 +3,20 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.0 - Strict Row Boundary Lock", layout="wide")
+st.set_page_config(page_title="MAYA v48.8 - 18 Layer Universal Matrix", layout="wide")
 
 # Custom CSS
 st.markdown("""
     <style>
     .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
+    .universal-box { background: #0f172a; color: #10b981; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #10b981; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
     .grid-square { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 400px; margin: 10px auto; }
     .grid-item { background: #ffffff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; text-align: center; border: 2px solid #bfdbfe; }
     .worst-badge { background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px; border: 1px solid #fecaca; }
-    .summary-bar { background: #f1f5f9; padding: 12px; border-radius: 8px; border-left: 5px solid #3b82f6; margin: 15px 0; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.0 (Boundary Lock Engine - Zero Value Shift)")
+st.title("🎯 MAYA v48.8 (18-Layer Universal Common Scanner)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -38,16 +38,10 @@ def generate_32_patterns(base_val):
 
 # --- WORST GAPS SCANNER (STRICT PAST LOCK) ---
 def find_worst_gaps_90(df, idx, col):
-    """
-    STRICT COMPLIANCE FIX: Loop strictly stop ho jayega idx-1 par.
-    Selected date (idx) ka koi bhi data is scan mein involve nahi hoga.
-    """
     gap_scores = {}
-    # Scan gaps from 1 to 90
     for g in range(1, 91):
         if (idx - 1) - g - 10 < 0: continue
         score = 0
-        # Loop strictly boundaries to past data only (stops before idx)
         for check in range(idx - 11, idx):
             if check - g < 0 or check == idx: continue
             pred = str(df.iloc[check-g].get(col, "XX")).split('.')[0]
@@ -57,11 +51,8 @@ def find_worst_gaps_90(df, idx, col):
         gap_scores[g] = score
     
     worst_gaps = sorted(gap_scores, key=gap_scores.get)[:5]
-    
-    bad_andar = []
-    bad_bahar = []
+    bad_andar, bad_bahar = [], []
     for wg in worst_gaps:
-        # Piche ke gaps se data extraction (strictly excluding active row)
         if (idx - 1) - wg >= 0:
             val = str(df.iloc[(idx - 1) - wg].get(col, 0)).split('.')[0]
             if val.isdigit():
@@ -72,13 +63,11 @@ def find_worst_gaps_90(df, idx, col):
     final_b = max(set(bad_bahar), key=bad_bahar.count) if bad_bahar else 5
     return final_a, final_b, worst_gaps
 
-# --- ADVANCED LOGIC WITH STRICT ROW ISOLATION ---
+# --- ADVANCED LOGIC WITH STRICT BOUNDARY LOCK ---
 def calculate_v48_logic(df, idx, shift):
     flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
     base_col = flow.get(shift, 'DS')
     
-    # LEVEL 1: Code 37 Base (64 Jodis)
-    # STRICT COMPLIANCE: Kal ki date (idx-1) se hi data uthana chalu hoga. Selected Row completely bypass.
     val = 0
     for i in range(1, 15):
         if idx - i >= 0:
@@ -99,8 +88,6 @@ def calculate_v48_logic(df, idx, shift):
         for i in range(10): blocked_64.add(f"{i}{b}")
     
     target_36 = [str(i).zfill(2) for i in range(100) if str(i).zfill(2) not in blocked_64]
-    
-    # LEVEL 2: Worst 90-Gap Filter (Locked to past rows)
     wa, wb, wgaps = find_worst_gaps_90(df, idx, base_col)
     
     extra_hatao = set()
@@ -110,7 +97,6 @@ def calculate_v48_logic(df, idx, shift):
         
     v48_stable = [j for j in target_36 if j not in extra_hatao]
     
-    # LEVEL 3: 32-Pattern execution strictly tied to past actual row result
     prev_actual_val = str(df.iloc[idx - 1].get(base_col, 0)).split('.')[0] if (idx - 1) >= 0 else "0"
     p32_set = generate_32_patterns(prev_actual_val)
     
@@ -136,83 +122,93 @@ if uploaded_file:
     df = df.rename(columns={'FD': 'FB', 'GD': 'GB', 'FBD': 'FB', 'GZB': 'GB'})
     
     sel_date = st.selectbox("📅 Date:", options=df['DATE'].astype(str).unique().tolist()[::-1])
-    target_s = st.selectbox("🎰 Shift:", options=['DS', 'FB', 'GB', 'GL', 'DB', 'SG'])
-    
     idx = df[df['DATE'].astype(str) == sel_date].index[0]
     
-    # --- LIVE RESULT DISPLAY ---
-    live_val = str(df.iloc[idx].get(target_s, "XX")).split('.')[0]
-    st.markdown(f'<div class="live-res">RESULT FOR SELECTED DATE: <span style="font-size:30px; font-weight:bold;">{live_val}</span></div>', unsafe_allow_html=True)
+    shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
+    
+    # --- 18-LAYER UNIVERSAL SCANNER CRUNCHING ---
+    # Is block mein hum saari 6 shifts aur unke 3 tiers ka data ek sath nikaal rahe hain
+    all_numbers_frequency = {}
+    
+    for s in shifts_list:
+        res_shift = calculate_v48_logic(df, idx, s)
+        
+        # Jodne ke liye teeno Tiers ko combine karenge (18 layers tracking)
+        for n in res_shift['common']:
+            all_numbers_frequency[n] = all_numbers_frequency.get(n, 0) + 1
+        for n in res_shift['uniq_v48']:
+            all_numbers_frequency[n] = all_numbers_frequency.get(n, 0) + 1
+        for n in res_shift['uniq_p32']:
+            all_numbers_frequency[n] = all_numbers_frequency.get(n, 0) + 1
 
-    # --- EXECUTE CALCULATIONS ---
-    res_dict = calculate_v48_logic(df, idx, target_s)
-
+    # Filter out numbers jo shifts ke andar heavy density overlap par hain
+    # High frequency check (Jaise jo numbers 4 ya usse zyada shifts ke patterns me overlap ho rhe hain)
+    universal_commons = [k for k, v in all_numbers_frequency.items() if v >= 4]
+    universal_commons = sorted(universal_commons)
+    
+    # --- DISPLAYING THE UNIVERSAL MATRIX RESULTS ---
+    st.markdown(f"""
+    <div class="universal-box">
+         🛡️ UNIVERSAL CROSS-COMMON MATRIX: Selected Date ({sel_date}) par shifts ke overlapping se Total **{len(universal_commons)}** Jodis Filter hui hain.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if universal_commons:
+        st.write("**💎 Universal High-Overlap Jodis (Minimum 4+ Shift Crossings):**")
+        st.code(", ".join(universal_commons))
+    else:
+        st.warning("Is date par koi bhi high density universal common number nahi mila.")
+        
+    # --- SINGLE SHIFT DETAIL VIEW ---
     st.divider()
-    st.write(f"⚠️ **Worst Gaps Found:** " + " ".join([f'<span class="worst-badge">Gap-{g}</span>' for g in res_dict['wgaps']]), unsafe_allow_html=True)
-
-    # --- UNICORN TOTAL SUMMARY BAR ---
-    c_count = len(res_dict['common'])
-    v_count = len(res_dict['uniq_v48'])
-    p_count = len(res_dict['uniq_p32'])
-    st.markdown(f'<div class="summary-bar">📊 Matrix Count: Common ({c_count}) + Unique V48 ({v_count}) + Unique 32-Pattern ({p_count}) = {c_count + v_count + p_count} Active Jodis</div>', unsafe_allow_html=True)
-
-    # --- ORIGINAL SQUARE 16 & SQUARE 9 BOXES ---
-    c1, c2 = st.columns(2)
-    with c1:
-        st.write("**✅ Stable Target (Square 16)**")
-        grid_html = '<div class="grid-square">'
-        for j in res_dict['t16']: grid_html += f'<div class="grid-item">{j}</div>'
-        grid_html += '</div>'
-        st.markdown(grid_html, unsafe_allow_html=True)
-
-    with c2:
-        st.write("**💎 Super Hit (Square 9)**")
-        grid_html = '<div class="grid-square" style="grid-template-columns: repeat(3, 1fr);">'
-        for j in res_dict['t9']: grid_html += f'<div class="grid-item" style="background:#fff7ed; color:#9a3412; border-color:#fed7aa;">{j}</div>'
-        grid_html += '</div>'
-        st.markdown(grid_html, unsafe_allow_html=True)
-
-    # --- DISPLAYING THE THREE SEPARATE UNICORN TEAMS ---
-    st.divider()
+    st.subheader("🎰 Individual Shift Verification Panel")
+    selected_view_shift = st.selectbox("Select Shift to view Tiers:", options=shifts_list)
+    
+    res_dict = calculate_v48_logic(df, idx, selected_view_shift)
+    
     tc1, tc2, tc3 = st.columns(3)
     with tc1:
-        st.info("💎 **Common Jodis**")
+        st.info(f"💎 **{selected_view_shift} - Common Tiers**")
         st.write(res_dict['common'] if res_dict['common'] else "No Commons")
     with tc2:
-        st.success("📦 **Unique V48 Gaps**")
+        st.success(f"📦 **{selected_view_shift} - Unique V48 Gaps**")
         st.write(res_dict['uniq_v48'])
     with tc3:
-        st.warning("🌀 **Unique 32-Pattern**")
+        st.warning(f"🌀 **{selected_view_shift} - Unique 32-Pattern**")
         st.write(res_dict['uniq_p32'])
 
-    # --- THE FIXED BACKTEST TABLE WITH ALL THREE TEAMS DISPLAYED ---
+    # --- THE COMPREHENSIVE BACKTEST TABLE FOR UNIVERSAL TIER ---
     st.divider()
-    st.subheader("📜 10-Day Deep Scan Backtest (All 3 Tiers Broken Down)")
+    st.subheader("📜 10-Day Universal Super-Filter Backtest Tracker")
+    st.caption("Yeh table track karti hai ki un 18 layers ke cross filtration se jo universal numbers nikle, unhone aage kya hit diya.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
-        h_res = calculate_v48_logic(df, i, target_s)
-        res = str(df.iloc[i].get(target_s, "XX")).split('.')[0]
-        
-        hit_common = "❌"
-        hit_v48 = "❌"
-        hit_p32 = "❌"
-        
-        if res.isdigit():
-            rv = str(int(res)).zfill(2)
+        # Calculate universal frequency for row 'i'
+        row_freq = {}
+        for s in shifts_list:
+            r_shift = calculate_v48_logic(df, i, s)
+            for n in r_shift['common']: row_freq[n] = row_freq.get(n, 0) + 1
+            for n in r_shift['uniq_v48']: row_freq[n] = row_freq.get(n, 0) + 1
+            for n in r_shift['uniq_p32']: row_freq[n] = row_freq.get(n, 0) + 1
             
-            # Har ek tier ke andar pass hua number track karo
-            if rv in h_res['common']: hit_common = f"🎯 {rv} (Pass)"
-            if rv in h_res['uniq_v48']: hit_v48 = f"✅ {rv} (Pass)"
-            if rv in h_res['uniq_p32']: hit_p32 = f"⚡ {rv} (Pass)"
+        row_universal = [k for k, v in row_freq.items() if v >= 4]
+        
+        # Check hitting across all shifts for that specific day
+        hit_details = []
+        for s in shifts_list:
+            actual_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
+            if actual_val.isdigit():
+                av_pad = str(int(actual_val)).zfill(2)
+                if av_pad in row_universal:
+                    hit_details.append(f"{s}:{av_pad}")
                     
         hist.append({
             "Date": df.iloc[i]['DATE'],
-            "Opened Result": res,
-            "Common Tier Result": hit_common,
-            "Unique V48 Result": hit_v48,
-            "Unique 32-Pattern Result": hit_p32
+            "Universal Generated Count": len(row_universal),
+            "Universal Numbers Set": ", ".join(row_universal) if row_universal else "None",
+            "Universal Hits Found On Same Day": ", ".join(hit_details) if hit_details else "❌"
         })
         
     st.table(pd.DataFrame(hist))
-    
+        
