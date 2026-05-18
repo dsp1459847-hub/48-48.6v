@@ -3,18 +3,18 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v48.9 - Inverse Universal Core", layout="wide")
+st.set_page_config(page_title="MAYA v48.9 - High Visibility Engine", layout="wide")
 
-# Custom CSS for Sleek UI Layout
+# Custom CSS for Solid UI
 st.markdown("""
     <style>
     .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
     .universal-box { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #38bdf8; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
-    .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; }
+    .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; font-size: 16px; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v48.9 (Inverse Universal Filter - Remaining Strike Engine)")
+st.title("🎯 MAYA v48.9 (Strict Error Bypass & Bold Layout)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -106,7 +106,6 @@ def calculate_v48_logic(df, idx, shift):
 
 # --- PROCESS CORE INVERSE MATRIX ---
 def calculate_inverse_universe(df, idx, shifts_list):
-    """Calculates full 18 layers frequency, blocks overlapping items, returns inverse pool"""
     all_num_freq = {}
     for s in shifts_list:
         res_shift = calculate_v48_logic(df, idx, s)
@@ -114,10 +113,7 @@ def calculate_inverse_universe(df, idx, shifts_list):
         for n in res_shift['uniq_v48']: all_num_freq[n] = all_num_freq.get(n, 0) + 1
         for n in res_shift['uniq_p32']: all_num_freq[n] = all_num_freq.get(n, 0) + 1
 
-    # Overlapping Core Numbers Set (Heavy Matrix Density Filter)
     universal_commons = [k for k, v in all_num_freq.items() if v >= 4]
-    
-    # Inverse Core Calculation: Total 100 minus the Universal Overlaps
     full_universe = [str(x).zfill(2) for x in range(100)]
     remaining_pool = sorted([num for num in full_universe if num not in universal_commons])
     
@@ -131,7 +127,8 @@ if uploaded_file:
     df.columns = [str(c).strip().upper() for c in df.columns]
     df = df.rename(columns={'FD': 'FB', 'GD': 'GB', 'FBD': 'FB', 'GZB': 'GB'})
     
-    sel_date = st.selectbox("📅 Date:", options=df['DATE'].astype(str).unique().tolist()[::-1])
+    all_dates = df['DATE'].astype(str).unique().tolist()
+    sel_date = st.selectbox("📅 Date:", options=all_dates[::-1])
     idx = df[df['DATE'].astype(str) == sel_date].index[0]
     
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
@@ -139,55 +136,70 @@ if uploaded_file:
     # Execute Matrix Calculations
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     
+    # Bold Strings for UI Enhancement
+    bold_date = f"**{sel_date}**"
+    bold_total_universe = f"**100**"
+    bold_overlaps_count = f"**{len(universal_blocked_pool)}**"
+    bold_active_pool_count = f"**{len(remaining_target_pool)}**"
+    
     # --- TOP INTERFACE DISPLAY PANEL ---
     st.markdown(f"""
     <div class="universal-box">
-         🛡️ INVERSE UNIVERSAL FILTER MODE: Selected Date ({sel_date})<br>
-         Total Universe (100) - Universal Overlaps ({len(universal_blocked_pool)}) = Active Prediction Pool ({len(remaining_target_pool)} Jodis Remaining)
+         🛡️ INVERSE UNIVERSAL FILTER MODE: Selected Date ({bold_date})<br>
+         Total Universe ({bold_total_universe}) - Universal Overlaps ({bold_overlaps_count}) = Active Prediction Pool ({bold_active_pool_count} Jodis Remaining)
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis ({len(universal_blocked_pool)}):</div>', unsafe_allow_html=True)
-    st.write(", ".join(universal_blocked_pool) if universal_blocked_pool else "No Blocked Numbers")
+    # Formatting Jodis with Bold tag for crystal clear view
+    bold_blocked_jodis = ", ".join([f"**{nj}**" for nj in universal_blocked_pool]) if universal_blocked_pool else "**No Blocked Numbers**"
+    bold_remaining_jodis = ", ".join([f"**{nj}**" for nj in remaining_target_pool])
     
-    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis ({len(remaining_target_pool)}):</div>', unsafe_allow_html=True)
-    st.code(", ".join(remaining_target_pool))
+    st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis ({bold_overlaps_count}):</div>', unsafe_allow_html=True)
+    st.write(bold_blocked_jodis, unsafe_allow_html=True)
+    
+    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis ({bold_active_pool_count}):</div>', unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:18px; letter-spacing:1px;'>{bold_remaining_jodis}</div>", unsafe_allow_html=True)
 
-    # --- THE COMPREHENSIVE BACKTEST TABLE WITH EXACT SAME-DAY SHIFT TARGETING ---
+    # --- THE COMPREHENSIVE BACKTEST TABLE (WITH COMPLETE BYPASS FIX) ---
     st.divider()
     st.subheader("📜 10-Day Strict Inverse Universal Validation Backtest")
-    st.caption("Yeh table track karti hai ki un 45-50 remaining jodis ke pool me se usi same day par kaun-kaun si shifts safalta purvak pass hoke nikli hain.")
+    st.caption("Yeh table track karti hai ki un remaining jodis ke pool me se usi same day par kaun-kaun si shifts safalta purvak pass hoke nikli hain.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
-        # Calculate pool logic for historical row 'i'
         row_remaining_pool, _ = calculate_inverse_universe(df, i, shifts_list)
         
-        passed_shifts_list = []
+        # Dictionary structure tracking map based shift alignment
+        passed_shifts_map = {s: "**❌**" for s in shifts_list}
         total_passed_count = 0
         
-        # Cross checking all 6 shifts data for exact hit discovery on the same row record
+        # Cross checking all 6 shifts securely (Error Redundancy Proof)
         for s in shifts_list:
-            actual_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
-            if actual_val.isdigit():
-                av_pad = str(int(actual_val)).zfill(2)
-                if av_pad in row_remaining_pool:
-                    passed_shifts_list.append(f"🟢 {s} ({av_pad})")
-                    total_passed_count += 1
-                else:
-                    passed_shifts_list.append(f"❌ {s}")
+            if s in df.columns:
+                actual_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
+                if actual_val.isdigit():
+                    av_pad = str(int(actual_val)).zfill(2)
+                    if av_pad in row_remaining_pool:
+                        passed_shifts_map[s] = f"**🟢 {s} ({av_pad})**"
+                        total_passed_count += 1
+                    else:
+                        passed_shifts_map[s] = f"**❌ {s}**"
+            else:
+                passed_shifts_map[s] = f"**⚠️ Missing Col**"
                     
         hist.append({
-            "History Date": df.iloc[i]['DATE'],
-            "Remaining Jodis Count": len(row_remaining_pool),
-            "DS Status": passed_shifts_list[0],
-            "FB Status": passed_shifts_list[1],
-            "GB Status": passed_shifts_list[2],
-            "GL Status": passed_shifts_list[3],
-            "DB Status": passed_shifts_list[4],
-            "SG Status": passed_shifts_list[5],
-            "Total Shifts Passed": f"{total_passed_count} / 6 Shifts"
+            "History Date": f"**{df.iloc[i]['DATE']}**",
+            "Pool Count": f"**{len(row_remaining_pool)}**",
+            "DS Status": passed_shifts_map['DS'],
+            "FB Status": passed_shifts_map['FB'],
+            "GB Status": passed_shifts_map['GB'],
+            "GL Status": passed_shifts_map['GL'],
+            "DB Status": passed_shifts_map['DB'],
+            "SG Status": passed_shifts_map['SG'],
+            "Total Shifts Passed": f"**{total_passed_count} / 6 Shifts**"
         })
         
-    st.table(pd.DataFrame(hist))
+    # Generating clean Streamlit table structure safely mapped
+    df_hist = pd.DataFrame(hist)
+    st.write(df_hist.to_html(escape=False, index=False), unsafe_allow_html=True)
     
