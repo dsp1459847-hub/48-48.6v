@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v49.8 - Strict Slicing Lock Engine", layout="wide")
+st.set_page_config(page_title="MAYA v49.9 - 45 Day Deep Engine", layout="wide")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -203,7 +203,7 @@ if uploaded_file:
     idx = df[df['DATE'].astype(str) == sel_date].index[0]
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
     
-    # Run base data streams
+    # Run base calculations
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     r16, r9, r5, r1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
     b25, b16, b9, b1 = calculate_blocked_pool_tiers(universal_blocked_pool, df, idx, target_s)
@@ -220,14 +220,13 @@ if uploaded_file:
         e2_option = st.selectbox("🔴 Engine 2 Selection (Blocked Groups):", 
                                  options=["Stable 25", "Stable 16", "Super Hit 9", "Single Core 1", "Full Pool (65 Jodis)"])
 
-    # Mapping references to strict variable sets
     e1_map = {"Full Pool (35 Jodis)": remaining_target_pool, "Stable 16": r16, "Super Hit 9": r9, "VVIP 5": r5, "Single Core 1": r1}
     e2_map = {"Full Pool (65 Jodis)": universal_blocked_pool, "Stable 25": b25, "Stable 16": b16, "Super Hit 9": b9, "Single Core 1": b1}
     
     active_e1_array = e1_map[e1_option]
     active_e2_array = e2_map[e2_option]
 
-    # Display dynamic grids matching dropdown strictly
+    # Display dynamic grids
     st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🟢 Active Target: {e1_option} ({len(active_e1_array)} Jodis Active)</div>', unsafe_allow_html=True)
     g_html = '<div class="grid-square-dynamic">'
     for num in active_e1_array: g_html += f'<div class="chakor-item-remaining">{num}</div>'
@@ -238,24 +237,23 @@ if uploaded_file:
     for num in active_e2_array: g_html += f'<div class="chakor-item-blocked">{num}</div>'
     st.markdown(g_html+'</div>', unsafe_allow_html=True)
 
-    # --- STRICT DRIVEN SYNCHRONIZED BACKTEST TABLE ---
+    # --- STRICT DRIVEN SYNCHRONIZED 45-DAY BACKTEST TABLE ---
     st.write("---")
-    st.subheader("📜 Strict Synchronized History Validation Backtest")
-    st.caption("Yeh table aapke dropdown selection ke mutabik hi absolute results ko scan karegi.")
+    st.subheader("📜 Strict Synchronized 45-Day History Validation Backtest")
+    st.caption(f"Yeh table aapke dropdown selection ke mutabik strictly piche ke **45 dino** ka deep matrix scan display karegi.")
     
     hist = []
-    for i in range(max(0, idx - 10), idx + 1):
+    # Loop range strictly extended up to max 45 points backwards
+    for i in range(max(0, idx - 45), idx + 1):
         row_rem, row_blk = calculate_inverse_universe(df, i, shifts_list)
         
-        # Calculate dynamic timeline sub-tiers for historical row pointers
+        # Calculate dynamic historical sub-slices strictly locked inside row context
         hr16, hr9, hr5, hr1 = calculate_4_tiers_from_pool(row_rem, df, i, target_s)
         hb25, hb16, hb9, hb1 = calculate_blocked_pool_tiers(row_blk, df, i, target_s)
         
-        # ABSOLUTE MATCH ARRAYS ENGINE LOCK
         h_e1_map = {"Full Pool (35 Jodis)": row_rem, "Stable 16": hr16, "Super Hit 9": hr9, "VVIP 5": hr5, "Single Core 1": hr1}
         h_e2_map = {"Full Pool (65 Jodis)": row_blk, "Stable 25": hb25, "Stable 16": hb16, "Super Hit 9": hb9, "Single Core 1": hb1}
         
-        # Fetching strictly the selection-driven limited array
         loop_e1_target_set = h_e1_map[e1_option]
         loop_e2_target_set = h_e2_map[e2_option]
         
@@ -266,7 +264,7 @@ if uploaded_file:
                 if val.isdigit():
                     v_pad = str(int(val)).zfill(2)
                     
-                    # STRICTOR BOUNDARY RULE CHECK: Only append if inside the limited dropdown slice
+                    # Exact dynamic alignment check matching dropdown slices
                     if v_pad in loop_e1_target_set:
                         rem_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
                     if v_pad in loop_e2_target_set:
@@ -292,4 +290,4 @@ if uploaded_file:
         st.write(f"Number **{s_pad}** status for selected date:")
         st.write(f"Engine 1 Cluster: {in_rem}")
         st.write(f"Engine 2 Cluster: {in_blk}")
-        
+    
