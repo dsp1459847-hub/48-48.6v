@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v49.0 - 4-Tier Deep Pool Engine", layout="wide")
+st.set_page_config(page_title="MAYA v49.1 - Unified Pass Column Engine", layout="wide")
 
 # Custom CSS for Solid Chakor Grid Layout
 st.markdown("""
@@ -26,7 +26,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v49.0 (4-Tier Deep Filter & Remaining Pool Machine)")
+st.title("🎯 MAYA v49.1 (Unified Pass Column Engine)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -133,38 +133,32 @@ def calculate_inverse_universe(df, idx, shifts_list):
 
 # --- NEW 4-TIER CRUNCHER LOGIC FROM REMAINING POOL ---
 def calculate_4_tiers_from_pool(pool, df, idx, shift):
-    """Pool data ko niche scroll par process karne ka naya deep mathematical setup"""
     flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
     base_col = flow.get(shift, 'DS')
     
-    # Core mathematical sorting factor extraction
     prev_val = str(df.iloc[idx-1].get(base_col, 0)).split('.')[0] if idx-1 >=0 else "0"
     p_num = int(prev_val) if prev_val.isdigit() else 0
     lead_digit = str(p_num // 10)
     end_digit = str(p_num % 10)
     
-    # Tier 1: Stable 16 Extraction
     t16 = [num for num in pool if num.startswith(lead_digit) or num.endswith(end_digit)]
     if len(t16) < 16:
         fillers = [x for x in pool if x not in t16]
         t16.extend(fillers[:16 - len(t16)])
     t16 = sorted(t16[:16])
     
-    # Tier 2: Super Hit 9 Extraction
     t9 = [n for n in t16 if (int(n)//10 + int(n)%10) % 2 == 0]
     if len(t9) < 9:
         fillers = [x for x in t16 if x not in t9]
         t9.extend(fillers[:9 - len(t9)])
     t9 = sorted(t9[:9])
     
-    # Tier 3: VVIP 5 Extraction
     t5 = [n for n in t9 if (int(n) % 5 == 0 or int(n) % 3 == 0)]
     if len(t5) < 5:
         fillers = [x for x in t9 if x not in t5]
         t5.extend(fillers[:5 - len(t5)])
     t5 = sorted(t5[:5])
     
-    # Tier 4: Single Core Shot
     t1 = [t5[0]] if t5 else ["00"]
     
     return t16, t9, t5, t1
@@ -211,10 +205,9 @@ if uploaded_file:
     grid_remaining_html += '</div>'
     st.markdown(grid_remaining_html, unsafe_allow_html=True)
 
-    # --- SCROLL DOWN: THE DEEP POER FILTER MATRIX SHOTS ---
+    # --- SCROLL DOWN: THE DEEP POWER FILTER MATRIX SHOTS ---
     st.divider()
     st.subheader("⬇️ SCROLL DOWN: THE 4-TIER SUB-POOL ANALYTICS ENGINE")
-    st.caption(f"Yahan aapka bacha hua pool further filter hokar high-power targets me transform ho chuka hai (Targeting Shift: <b>{target_s}</b>)")
     
     pool_16, pool_9, pool_5, pool_1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
     
@@ -245,7 +238,7 @@ if uploaded_file:
         g_html = f'<div class="chakor-tier-1">{pool_1[0]}</div>'
         st.markdown(g_html, unsafe_allow_html=True)
 
-    # --- THE ADVANCED 4-TIER ACTIVE TABLE BACKTEST ---
+    # --- THE ADVANCED UNIQUE UNIFIED BACKTEST ---
     st.divider()
     st.subheader("📜 10-Day Deep Sub-Pool Validation Backtest")
     
@@ -266,9 +259,26 @@ if uploaded_file:
             if av_pad in p9: h9 = f"<span style='color:#d97706; font-weight:bold;'>💎 {av_pad} (Pass)</span>"
             if av_pad in p16: h16 = f"<span style='color:#2563eb; font-weight:bold;'>✅ {av_pad} (Pass)</span>"
             
+        # UNIFIED HIGH POWER COLUMN ENGINE (6 Shifts Data Fusion in Single Box)
+        unified_passed_jodis = []
+        for s in shifts_list:
+            if s in df.columns:
+                shift_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
+                if shift_val.isdigit():
+                    s_pad = str(int(shift_val)).zfill(2)
+                    # Check if the number passed from the pool
+                    if s_pad in row_pool:
+                        unified_passed_jodis.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{s_pad}</span>")
+                    else:
+                        unified_passed_jodis.append(f"<span style='color:#dc2626; font-weight:normal;'>{s}:{s_pad}</span>")
+        
+        # Joining all items with comma separated format inside a single string variable
+        unified_column_html = ", ".join(unified_passed_jodis) if unified_passed_jodis else "<b>None</b>"
+            
         hist.append({
             "History Date": f"<b>{df.iloc[i]['DATE']}</b>",
-            "Actual Result": f"<b>{actual_opened}</b>",
+            "Target Shift Result": f"<b>{actual_opened}</b>",
+            "All Shifts Closed Results (History Pass)": unified_column_html,
             "Stable 16 Status": h16,
             "Super Hit 9 Status": h9,
             "VVIP 5 Status": h5,
@@ -277,4 +287,4 @@ if uploaded_file:
         
     df_hist = pd.DataFrame(hist)
     st.write(df_hist.to_html(escape=False, index=False), unsafe_allow_html=True)
-    
+            
