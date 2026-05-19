@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v49.1 - Unified Pass Column Engine", layout="wide")
+st.set_page_config(page_title="MAYA v49.3 - Double Engine Master", layout="wide")
 
-# Custom CSS for Solid Chakor Grid Layout
+# Custom CSS for Solid Chakor Grid & Bold Layouts
 st.markdown("""
     <style>
     .live-res { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }
@@ -13,20 +13,25 @@ st.markdown("""
     .summary-bar { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; font-size: 18px; color: #1e293b; }
     .tier-bar { background: #eff6ff; padding: 10px; border-radius: 6px; border-left: 5px solid #3b82f6; margin: 10px 0; font-weight: bold; font-size: 16px; }
     
-    /* Chakor Grid Styling */
+    /* Chakor Grid Components */
     .grid-square-dynamic { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; width: 100%; margin: 15px 0; }
     .chakor-item-remaining { background: #dcfce7; color: #15803d; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #bbf7d0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .chakor-item-blocked { background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #fecaca; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     
-    /* Tier Boxes Layout */
+    /* Dynamic Tiers Formatting CSS */
     .chakor-tier-16 { background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #bfdbfe; }
     .chakor-tier-9 { background: #fef3c7; color: #92400e; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #fde68a; }
     .chakor-tier-5 { background: #f3e8ff; color: #6b21a8; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #e9d5ff; }
     .chakor-tier-1 { background: #fce7f3; color: #9d174d; padding: 15px; border-radius: 6px; font-size: 26px; font-weight: bold; text-align: center; border: 2px solid #fbcfe8; }
+    
+    .chakor-b-25 { background: #fef2f2; color: #991b1b; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #fecaca; }
+    .chakor-b-16 { background: #fff7ed; color: #9a3412; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #fed7aa; }
+    .chakor-b-9 { background: #fff9db; color: #856404; padding: 12px; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; border: 2px solid #ffeeba; }
+    .chakor-b-1 { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 6px; font-size: 26px; font-weight: bold; text-align: center; border: 2px solid #f5c6cb; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v49.1 (Unified Pass Column Engine)")
+st.title("🎯 MAYA v49.3 (Double Engine Unified History Master)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -131,7 +136,7 @@ def calculate_inverse_universe(df, idx, shifts_list):
     
     return remaining_pool, sorted(universal_commons)
 
-# --- NEW 4-TIER CRUNCHER LOGIC FROM REMAINING POOL ---
+# --- 4-TIER REMAINING POOL EXTRACTION ---
 def calculate_4_tiers_from_pool(pool, df, idx, shift):
     flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
     base_col = flow.get(shift, 'DS')
@@ -160,8 +165,38 @@ def calculate_4_tiers_from_pool(pool, df, idx, shift):
     t5 = sorted(t5[:5])
     
     t1 = [t5[0]] if t5 else ["00"]
-    
     return t16, t9, t5, t1
+
+# --- 4-TIER BLOCKED POOL EXTRACTION ---
+def calculate_blocked_pool_tiers(blocked_pool, df, idx, shift):
+    flow = {'FB': 'DS', 'GB': 'FB', 'GL': 'GB', 'DS': 'GL', 'SG': 'DB', 'DB': 'GL'}
+    base_col = flow.get(shift, 'DS')
+    
+    prev_val = str(df.iloc[idx-1].get(base_col, 0)).split('.')[0] if idx-1 >= 0 else "0"
+    p_num = int(prev_val) if prev_val.isdigit() else 0
+    a_dig, b_dig = str(p_num // 10), str(p_num % 10)
+    
+    b25 = [num for num in blocked_pool if (num.startswith(a_dig) or num.endswith(b_dig) or 
+                                           num.startswith(str((int(a_dig)+5)%10)) or num.endswith(str((int(b_dig)+5)%10)))]
+    if len(b25) < 25:
+        fillers = [x for x in blocked_pool if x not in b25]
+        b25.extend(fillers[:25 - len(b25)])
+    b25 = sorted(b25[:25])
+    
+    b16 = [n for n in b25 if (int(n) % 2 == 0 or int(n) % 3 == 0)]
+    if len(b16) < 16:
+        fillers = [x for x in b25 if x not in b16]
+        b16.extend(fillers[:16 - len(b16)])
+    b16 = sorted(b16[:16])
+    
+    b9 = [n for n in b16 if (int(n)//10 + int(n)%10) % 2 != 0]
+    if len(b9) < 9:
+        fillers = [x for x in b16 if x not in b9]
+        b9.extend(fillers[:9 - len(b9)])
+    b9 = sorted(b9[:9])
+    
+    b1 = [b9[0]] if b9 else ["00"]
+    return b25, b16, b9, b1
 
 # --- DASHBOARD CONTROL ---
 uploaded_file = st.file_uploader("📂 Upload Excel Data Sheet", type=["xlsx", "csv"])
@@ -173,118 +208,143 @@ if uploaded_file:
     
     all_dates = df['DATE'].astype(str).unique().tolist()
     sel_date = st.selectbox("📅 Date:", options=all_dates[::-1])
-    target_s = st.selectbox("🎰 Select Shift for Deep Tiers:", options=['DS', 'FB', 'GB', 'GL', 'DB', 'SG'])
+    target_s = st.selectbox("🎰 Select Shift for Analytics Tiers:", options=['DS', 'FB', 'GB', 'GL', 'DB', 'SG'])
     
     idx = df[df['DATE'].astype(str) == sel_date].index[0]
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
     
-    # Execute Matrix Calculations
+    # Calculate Double Engine Universes
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     
-    # --- TOP INTERFACE DISPLAY PANEL ---
+    # --- TOP INTERFACE SUMMARY PANELS ---
     st.markdown(f"""
     <div class="universal-box">
-         🛡️ INVERSE UNIVERSAL FILTER MODE: Selected Date (<b>{sel_date}</b>)<br>
-         Total Universe (<b>100</b>) - Universal Overlaps (<b>{len(universal_blocked_pool)}</b>) = Active Prediction Pool (<b>{len(remaining_target_pool)} Jodis Remaining</b>)
+         🛡️ DOUBLE ENGINE CORE MODE: Selected Date (<b>{sel_date}</b>)<br>
+         Total Universe (<b>100</b>) = Remaining Target Pool (<b>{len(remaining_target_pool)} Jodis</b>) + Blocked Overlaps Pool (<b>{len(universal_blocked_pool)} Jodis</b>)
     </div>
     """, unsafe_allow_html=True)
     
-    # 1. BLOCKED UNIVERSAL JODIS CHAKOR GRID
-    st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis (<b>{len(universal_blocked_pool)}</b>):</div>', unsafe_allow_html=True)
-    grid_blocked_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
-    for j in universal_blocked_pool:
-        grid_blocked_html += f'<div class="chakor-item-blocked">{j}</div>'
-    grid_blocked_html += '</div>'
-    st.markdown(grid_blocked_html, unsafe_allow_html=True)
+    # Render Grids Layout
+    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 ENGINE 1: Active Target Remaining Jodis ({len(remaining_target_pool)}):</div>', unsafe_allow_html=True)
+    g_rem = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
+    for j in remaining_target_pool: g_rem += f'<div class="chakor-item-remaining">{j}</div>'
+    g_rem += '</div>'
+    st.markdown(g_rem, unsafe_allow_html=True)
     
-    # 2. ACTIVE TARGET REMAINING JODIS CHAKOR GRID
-    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis (<b>{len(remaining_target_pool)}</b>):</div>', unsafe_allow_html=True)
-    grid_remaining_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
-    for j in remaining_target_pool:
-        grid_remaining_html += f'<div class="chakor-item-remaining">{j}</div>'
-    grid_remaining_html += '</div>'
-    st.markdown(grid_remaining_html, unsafe_allow_html=True)
+    st.markdown(f'<div class="summary-bar">🚫 ENGINE 2: Blocked Universal Jodis ({len(universal_blocked_pool)}):</div>', unsafe_allow_html=True)
+    g_blk = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
+    for j in universal_blocked_pool: g_blk += f'<div class="chakor-item-blocked">{j}</div>'
+    g_blk += '</div>'
+    st.markdown(g_blk, unsafe_allow_html=True)
 
-    # --- SCROLL DOWN: THE DEEP POWER FILTER MATRIX SHOTS ---
+    # --- SCROLL DOWN: THE TWO SUB-POOL ANALYTICS GRIDS ---
     st.divider()
-    st.subheader("⬇️ SCROLL DOWN: THE 4-TIER SUB-POOL ANALYTICS ENGINE")
+    st.subheader("⬇️ SCROLL DOWN: DUAL ENGINE SUB-POOL ANALYSIS SUB-GROUPS")
     
     pool_16, pool_9, pool_5, pool_1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
+    blk_25, blk_16, blk_9, blk_1 = calculate_blocked_pool_tiers(universal_blocked_pool, df, idx, target_s)
     
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.markdown('<div class="tier-bar">✅ Pool Stable (16 Jodis)</div>', unsafe_allow_html=True)
-        g_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(4, 1fr); gap: 6px;">'
-        for num in pool_16: g_html += f'<div class="chakor-tier-16">{num}</div>'
-        g_html += '</div>'
-        st.markdown(g_html, unsafe_allow_html=True)
-        
-    with c2:
-        st.markdown('<div class="tier-bar" style="border-left-color: #f59e0b;">💎 Pool Super Hit (9 Jodis)</div>', unsafe_allow_html=True)
-        g_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">'
-        for num in pool_9: g_html += f'<div class="chakor-tier-9">{num}</div>'
-        g_html += '</div>'
-        st.markdown(g_html, unsafe_allow_html=True)
-        
-    with c3:
-        st.markdown('<div class="tier-bar" style="border-left-color: #a855f7;">🔥 Pool VVIP Target (5 Jodis)</div>', unsafe_allow_html=True)
-        g_html = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(1, 1fr); gap: 6px;">'
-        for num in pool_5: g_html += f'<div class="chakor-tier-5">{num}</div>'
-        g_html += '</div>'
-        st.markdown(g_html, unsafe_allow_html=True)
-        
-    with c4:
-        st.markdown('<div class="tier-bar" style="border-left-color: #ec4899;">👑 Pool Single Core Shot</div>', unsafe_allow_html=True)
-        g_html = f'<div class="chakor-tier-1">{pool_1[0]}</div>'
-        st.markdown(g_html, unsafe_allow_html=True)
+    tab1, tab2 = st.tabs(["🟢 TRACKING: REMAINING POOL TIERS", "🔴 TRACKING: BLOCKED POOL TIERS"])
+    
+    with tab1:
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.markdown('<div class="tier-bar">✅ Pool Stable (16 Jodis)</div>', unsafe_allow_html=True)
+            g = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(4, 1fr); gap: 6px;">'
+            for n in pool_16: g += f'<div class="chakor-tier-16">{n}</div>'
+            st.markdown(g+'</div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="tier-bar" style="border-left-color: #f59e0b;">💎 Pool Super Hit (9 Jodis)</div>', unsafe_allow_html=True)
+            g = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">'
+            for n in pool_9: g += f'<div class="chakor-tier-9">{n}</div>'
+            st.markdown(g+'</div>', unsafe_allow_html=True)
+        with c3:
+            st.markdown('<div class="tier-bar" style="border-left-color: #a855f7;">🔥 Pool VVIP Target (5 Jodis)</div>', unsafe_allow_html=True)
+            g = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(1, 1fr); gap: 6px;">'
+            for n in pool_5: g += f'<div class="chakor-tier-5">{n}</div>'
+            st.markdown(g+'</div>', unsafe_allow_html=True)
+        with c4:
+            st.markdown('<div class="tier-bar" style="border-left-color: #ec4899;">👑 Pool Single Shot</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="chakor-tier-1">{pool_1[0]}</div>', unsafe_allow_html=True)
 
-    # --- THE ADVANCED UNIQUE UNIFIED BACKTEST ---
+    with tab2:
+        b1, b2, b3, b4 = st.columns(4)
+        with b1:
+            st.markdown('<div class="tier-bar">🚫 Blocked Stable (25 Jodis)</div>', unsafe_allow_html=True)
+            g = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(5, 1fr); gap: 6px;">'
+            for n in blk_25: g += f'<div class="chakor-b-25">{n}</div>'
+            st.markdown(g+'</div>', unsafe_allow_html=True)
+        with b2:
+            st.markdown('<div class="tier-bar" style="border-left-color: #f97316;">🚫 Blocked Stable (16 Jodis)</div>', unsafe_allow_html=True)
+            g = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(4, 1fr); gap: 6px;">'
+            for n in blk_16: g += f'<div class="chakor-b-16">{n}</div>'
+            st.markdown(g+'</div>', unsafe_allow_html=True)
+        with b3:
+            st.markdown('<div class="tier-bar" style="border-left-color: #eab308;">🚫 Blocked Super Hit (9 Jodis)</div>', unsafe_allow_html=True)
+            g = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">'
+            for n in blk_9: g += f'<div class="chakor-b-9">{n}</div>'
+            st.markdown(g+'</div>', unsafe_allow_html=True)
+        with b4:
+            st.markdown('<div class="tier-bar" style="border-left-color: #b91c1c;">🚫 Blocked Single Shot</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="chakor-b-1">{blk_1[0]}</div>', unsafe_allow_html=True)
+
+    # --- ADVANCED DOUBLE POOL UNIFIED MASTER BACKTEST ---
     st.divider()
-    st.subheader("📜 10-Day Deep Sub-Pool Validation Backtest")
+    st.subheader("📜 10-Day Unified Double Engine Validation Backtest")
+    st.caption("Yeh master table dono engines ke sub-tiers ki passing aur side-by-side exact history closures ko ek hi view me track karti hai.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
-        row_pool, _ = calculate_inverse_universe(df, i, shifts_list)
-        p16, p9, p5, p1 = calculate_4_tiers_from_pool(row_pool, df, i, target_s)
+        row_rem_pool, row_blk_pool = calculate_inverse_universe(df, i, shifts_list)
+        
+        # Calculate pool and blocked metrics for row 'i'
+        pr16, pr9, pr5, pr1 = calculate_4_tiers_from_pool(row_rem_pool, df, i, target_s)
+        rb25, rb16, rb9, rb1 = calculate_blocked_pool_tiers(row_blk_pool, df, i, target_s)
         
         actual_opened = str(df.iloc[i].get(target_s, "XX")).split('.')[0]
         
-        h16, h9, h5, h1 = "❌", "❌", "❌", "❌"
+        # Tracking states
+        h_rem, h_blk = "❌", "❌"
         
         if actual_opened.isdigit():
-            av_pad = str(int(actual_opened)).zfill(2)
+            av = str(int(actual_opened)).zfill(2)
+            if av in pr1: h_rem = "<span style='color:#ec4899; font-weight:bold;'>👑 Single</span>"
+            elif av in pr5: h_rem = "<span style='color:#a855f7; font-weight:bold;'>🔥 VVIP-5</span>"
+            elif av in pr9: h_rem = "<span style='color:#d97706; font-weight:bold;'>💎 Super-9</span>"
+            elif av in pr16: h_rem = "<span style='color:#2563eb; font-weight:bold;'>✅ Stable-16</span>"
             
-            if av_pad in p1: h1 = f"<span style='color:#ec4899; font-weight:bold;'>👑 {av_pad} (Pass)</span>"
-            if av_pad in p5: h5 = f"<span style='color:#a855f7; font-weight:bold;'>🔥 {av_pad} (Pass)</span>"
-            if av_pad in p9: h9 = f"<span style='color:#d97706; font-weight:bold;'>💎 {av_pad} (Pass)</span>"
-            if av_pad in p16: h16 = f"<span style='color:#2563eb; font-weight:bold;'>✅ {av_pad} (Pass)</span>"
-            
-        # UNIFIED HIGH POWER COLUMN ENGINE (6 Shifts Data Fusion in Single Box)
-        unified_passed_jodis = []
+            if av in rb1: h_blk = "<span style='color:#b91c1c; font-weight:bold;'>👑 Single</span>"
+            elif av in rb9: h_blk = "<span style='color:#eab308; font-weight:bold;'>💎 Super-9</span>"
+            elif av in rb16: h_blk = "<span style='color:#f97316; font-weight:bold;'>✅ Stable-16</span>"
+            elif av in rb25: h_blk = "<span style='color:#991b1b; font-weight:bold;'>📦 Stable-25</span>"
+
+        # BUILD SIDE-BY-SIDE DOUBLE CLOSED HISTORY PASS COLUMNS
+        rem_passed = []
+        blk_passed = []
+        
         for s in shifts_list:
             if s in df.columns:
-                shift_val = str(df.iloc[i].get(s, "XX")).split('.')[0]
-                if shift_val.isdigit():
-                    s_pad = str(int(shift_val)).zfill(2)
-                    # Check if the number passed from the pool
-                    if s_pad in row_pool:
-                        unified_passed_jodis.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{s_pad}</span>")
-                    else:
-                        unified_passed_jodis.append(f"<span style='color:#dc2626; font-weight:normal;'>{s}:{s_pad}</span>")
+                val = str(df.iloc[i].get(s, "XX")).split('.')[0]
+                if val.isdigit():
+                    v_pad = str(int(val)).zfill(2)
+                    
+                    # Remaining pool validation
+                    if v_pad in row_rem_pool: rem_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
+                    else: rem_passed.append(f"<span style='color:#dc2626; font-weight:normal;'>{s}:{v_pad}</span>")
+                    
+                    # Blocked pool validation
+                    if v_pad in row_blk_pool: blk_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
+                    else: blk_passed.append(f"<span style='color:#dc2626; font-weight:normal;'>{s}:{v_pad}</span>")
         
-        # Joining all items with comma separated format inside a single string variable
-        unified_column_html = ", ".join(unified_passed_jodis) if unified_passed_jodis else "<b>None</b>"
-            
         hist.append({
             "History Date": f"<b>{df.iloc[i]['DATE']}</b>",
-            "Target Shift Result": f"<b>{actual_opened}</b>",
-            "All Shifts Closed Results (History Pass)": unified_column_html,
-            "Stable 16 Status": h16,
-            "Super Hit 9 Status": h9,
-            "VVIP 5 Status": h5,
-            "Single Core Status": h1
+            "Target Res": f"<b>{actual_opened}</b>",
+            "🟢 Remaining Universe History Pass": ", ".join(rem_passed),
+            "🔴 Blocked Universe History Pass": ", ".join(blk_passed),
+            "Engine-1 (Remaining Tier)": h_rem,
+            "Engine-2 (Blocked Tier)": h_blk
         })
         
     df_hist = pd.DataFrame(hist)
     st.write(df_hist.to_html(escape=False, index=False), unsafe_allow_html=True)
-            
+    
