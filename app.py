@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v49.4 - Aligned History Pass Engine", layout="wide")
+st.set_page_config(page_title="MAYA v49.4 - Strict Fixed Sub-Tier Engine", layout="wide")
 
 # Custom CSS for Solid Chakor Grid & Bold Layouts
 st.markdown("""
@@ -31,7 +31,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v49.4 (Strict Filtered History Engine)")
+st.title("🎯 MAYA v49.4 (Strict Sub-Tier 16 & 25 Filter Lock)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -213,7 +213,7 @@ if uploaded_file:
     idx = df[df['DATE'].astype(str) == sel_date].index[0]
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
     
-    # Calculate Double Engine Universes
+    # Calculate Universes
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     
     # --- TOP INTERFACE SUMMARY PANELS ---
@@ -291,13 +291,12 @@ if uploaded_file:
     # --- ADVANCED DOUBLE POOL UNIFIED MASTER BACKTEST ---
     st.divider()
     st.subheader("📜 10-Day Unified Double Engine Validation Backtest")
-    st.caption("Yeh master table strictly nikaley hue 16 aur 25 ankon ke subgroups ki actual passing track karti hai.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
         row_rem_pool, row_blk_pool = calculate_inverse_universe(df, i, shifts_list)
         
-        # Extracted sub-tiers based on row 'i'
+        # Strictly generate the sub-tiers for that history date row 'i'
         pr16, pr9, pr5, pr1 = calculate_4_tiers_from_pool(row_rem_pool, df, i, target_s)
         rb25, rb16, rb9, rb1 = calculate_blocked_pool_tiers(row_blk_pool, df, i, target_s)
         
@@ -317,7 +316,7 @@ if uploaded_file:
             elif av in rb16: h_blk = "<span style='color:#f97316; font-weight:bold;'>✅ Stable-16</span>"
             elif av in rb25: h_blk = "<span style='color:#991b1b; font-weight:bold;'>📦 Stable-25</span>"
 
-        # STRICT EXTRACTION COMPLIANCE: Mapped entirely to 16 and 25 sub-tiers ONLY
+        # STRICT PASS CHECK RULE: ONLY cross-check results inside pr16 and rb25 respectively
         rem_passed = []
         blk_passed = []
         
@@ -327,11 +326,11 @@ if uploaded_file:
                 if val.isdigit():
                     v_pad = str(int(val)).zfill(2)
                     
-                    # 🟢 RULE: Check strictly inside Stable-16 sub-tier only (Baki 100 me se saaf)
+                    # 🟢 Strictly look inside the 16 Jodis set ONLY
                     if v_pad in pr16: 
                         rem_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
                     
-                    # 🔴 RULE: Check strictly inside Blocked Stable-25 sub-tier only (Baki 100 me se saaf)
+                    # 🔴 Strictly look inside the 25 Jodis set ONLY
                     if v_pad in rb25: 
                         blk_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
         
@@ -346,4 +345,4 @@ if uploaded_file:
         
     df_hist = pd.DataFrame(hist)
     st.write(df_hist.to_html(escape=False, index=False), unsafe_allow_html=True)
-        
+                   
