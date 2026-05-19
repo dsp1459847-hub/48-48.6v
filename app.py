@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v49.4 - Strict Fixed Sub-Tier Engine", layout="wide")
+st.set_page_config(page_title="MAYA v49.6 - Dynamic Switch Engine", layout="wide")
 
 # Custom CSS for Solid Chakor Grid & Bold Layouts
 st.markdown("""
@@ -31,7 +31,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🎯 MAYA v49.4 (Strict Sub-Tier 16 & 25 Filter Lock)")
+st.title("🎯 MAYA v49.6 (Double Engine Pool Controller)")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -216,37 +216,38 @@ if uploaded_file:
     # Calculate Universes
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     
-    # --- TOP INTERFACE SUMMARY PANELS ---
+    # --- DYNAMIC CONTROLLER INTERFACE (TWO ACTION BUTTONS) ---
+    st.markdown("### 🎛️ SELECT ACTIVE ENGINE VIEW:")
+    btn_col1, btn_col2 = st.columns(2)
+    
+    if "active_engine" not in st.session_state:
+        st.session_state.active_engine = "Remaining"
+
+    with btn_col1:
+        if st.button("🟢 View Remaining Pool (35 Jodis Group) & Sub-Tiers", use_container_width=True):
+            st.session_state.active_engine = "Remaining"
+            
+    with btn_col2:
+        if st.button("🔴 View Blocked Pool (65 Jodis Group) & Sub-Tiers", use_container_width=True):
+            st.session_state.active_engine = "Blocked"
+
+    # --- MAIN ENGINE VIEW GENERATOR ---
     st.markdown(f"""
     <div class="universal-box">
-         🛡️ DOUBLE ENGINE CORE MODE: Selected Date (<b>{sel_date}</b>)<br>
-         Total Universe (<b>100</b>) = Remaining Target Pool (<b>{len(remaining_target_pool)} Jodis</b>) + Blocked Overlaps Pool (<b>{len(universal_blocked_pool)} Jodis</b>)
+         🛡️ CURRENT ENGINE VIEW MODE: <b>{st.session_state.active_engine.upper()} POOL MATRIX ACTIVE</b> (Selected Date: <b>{sel_date}</b>)<br>
+         Remaining Target Pool (<b>{len(remaining_target_pool)} Jodis</b>) | Blocked Overlaps Pool (<b>{len(universal_blocked_pool)} Jodis</b>)
     </div>
     """, unsafe_allow_html=True)
     
-    # Render Grids Layout
-    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 ENGINE 1: Active Target Remaining Jodis ({len(remaining_target_pool)}):</div>', unsafe_allow_html=True)
-    g_rem = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
-    for j in remaining_target_pool: g_rem += f'<div class="chakor-item-remaining">{j}</div>'
-    g_rem += '</div>'
-    st.markdown(g_rem, unsafe_allow_html=True)
-    
-    st.markdown(f'<div class="summary-bar">🚫 ENGINE 2: Blocked Universal Jodis ({len(universal_blocked_pool)}):</div>', unsafe_allow_html=True)
-    g_blk = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
-    for j in universal_blocked_pool: g_blk += f'<div class="chakor-item-blocked">{j}</div>'
-    g_blk += '</div>'
-    st.markdown(g_blk, unsafe_allow_html=True)
-
-    # --- SCROLL DOWN: THE TWO SUB-POOL ANALYTICS GRIDS ---
-    st.divider()
-    st.subheader("⬇️ SCROLL DOWN: DUAL ENGINE SUB-POOL ANALYSIS SUB-GROUPS")
-    
-    pool_16, pool_9, pool_5, pool_1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
-    blk_25, blk_16, blk_9, blk_1 = calculate_blocked_pool_tiers(universal_blocked_pool, df, idx, target_s)
-    
-    tab1, tab2 = st.tabs(["🟢 TRACKING: REMAINING POOL TIERS", "🔴 TRACKING: BLOCKED POOL TIERS"])
-    
-    with tab1:
+    # Display the correct active universe grid based on button selection
+    if st.session_state.active_engine == "Remaining":
+        st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🎯 Active Target Remaining Jodis Pool ({len(remaining_target_pool)}):</div>', unsafe_allow_html=True)
+        g_rem = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
+        for j in remaining_target_pool: g_rem += f'<div class="chakor-item-remaining">{j}</div>'
+        st.markdown(g_rem+'</div>', unsafe_allow_html=True)
+        
+        # Sub-Tiers display for Remaining Pool
+        pool_16, pool_9, pool_5, pool_1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown('<div class="tier-bar">✅ Pool Stable (16 Jodis)</div>', unsafe_allow_html=True)
@@ -266,8 +267,15 @@ if uploaded_file:
         with c4:
             st.markdown('<div class="tier-bar" style="border-left-color: #ec4899;">👑 Pool Single Shot</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="chakor-tier-1">{pool_1[0]}</div>', unsafe_allow_html=True)
-
-    with tab2:
+            
+    else:
+        st.markdown(f'<div class="summary-bar">🚫 Blocked Universal Jodis Pool ({len(universal_blocked_pool)}):</div>', unsafe_allow_html=True)
+        g_blk = '<div class="grid-square-dynamic" style="grid-template-columns: repeat(10, 1fr);">'
+        for j in universal_blocked_pool: g_blk += f'<div class="chakor-item-blocked">{j}</div>'
+        st.markdown(g_blk+'</div>', unsafe_allow_html=True)
+        
+        # Sub-Tiers display for Blocked Pool
+        blk_25, blk_16, blk_9, blk_1 = calculate_blocked_pool_tiers(universal_blocked_pool, df, idx, target_s)
         b1, b2, b3, b4 = st.columns(4)
         with b1:
             st.markdown('<div class="tier-bar">🚫 Blocked Stable (25 Jodis)</div>', unsafe_allow_html=True)
@@ -288,61 +296,67 @@ if uploaded_file:
             st.markdown('<div class="tier-bar" style="border-left-color: #b91c1c;">🚫 Blocked Single Shot</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="chakor-b-1">{blk_1[0]}</div>', unsafe_allow_html=True)
 
-    # --- ADVANCED DOUBLE POOL UNIFIED MASTER BACKTEST ---
+    # --- DYNAMIC STRICT DRIVEN VALIDATION BACKTEST ---
     st.divider()
-    st.subheader("📜 10-Day Unified Double Engine Validation Backtest")
+    st.subheader(f"📜 10-Day Aligned Backtest Layout ({st.session_state.active_engine} Pool Strict Tracking)")
+    st.caption("Yeh table aapke select kiye hue button ke pool aur sub-tiers ki absolute passing track karti hai.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
         row_rem_pool, row_blk_pool = calculate_inverse_universe(df, i, shifts_list)
-        
-        # Strictly generate the sub-tiers for that history date row 'i'
-        pr16, pr9, pr5, pr1 = calculate_4_tiers_from_pool(row_rem_pool, df, i, target_s)
-        rb25, rb16, rb9, rb1 = calculate_blocked_pool_tiers(row_blk_pool, df, i, target_s)
-        
         actual_opened = str(df.iloc[i].get(target_s, "XX")).split('.')[0]
         
-        h_rem, h_blk = "❌", "❌"
+        passed_history_list = []
+        status_tier_render = "❌"
         
         if actual_opened.isdigit():
             av = str(int(actual_opened)).zfill(2)
-            if av in pr1: h_rem = "<span style='color:#ec4899; font-weight:bold;'>👑 Single</span>"
-            elif av in pr5: h_rem = "<span style='color:#a855f7; font-weight:bold;'>🔥 VVIP-5</span>"
-            elif av in pr9: h_rem = "<span style='color:#d97706; font-weight:bold;'>💎 Super-9</span>"
-            elif av in pr16: h_rem = "<span style='color:#2563eb; font-weight:bold;'>✅ Stable-16</span>"
             
-            if av in rb1: h_blk = "<span style='color:#b91c1c; font-weight:bold;'>👑 Single</span>"
-            elif av in rb9: h_blk = "<span style='color:#eab308; font-weight:bold;'>💎 Super-9</span>"
-            elif av in rb16: h_blk = "<span style='color:#f97316; font-weight:bold;'>✅ Stable-16</span>"
-            elif av in rb25: h_blk = "<span style='color:#991b1b; font-weight:bold;'>📦 Stable-25</span>"
-
-        # STRICT PASS CHECK RULE: ONLY cross-check results inside pr16 and rb25 respectively
-        rem_passed = []
-        blk_passed = []
-        
-        for s in shifts_list:
-            if s in df.columns:
-                val = str(df.iloc[i].get(s, "XX")).split('.')[0]
-                if val.isdigit():
-                    v_pad = str(int(val)).zfill(2)
-                    
-                    # 🟢 Strictly look inside the 16 Jodis set ONLY
-                    if v_pad in pr16: 
-                        rem_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
-                    
-                    # 🔴 Strictly look inside the 25 Jodis set ONLY
-                    if v_pad in rb25: 
-                        blk_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
+            # CONDITION 1: Remaining view active -> Scan strictly from remaining pool & sub-tiers
+            if st.session_state.active_engine == "Remaining":
+                pr16, pr9, pr5, pr1 = calculate_4_tiers_from_pool(row_rem_pool, df, i, target_s)
+                
+                # Check status tracking
+                if av in pr1: status_tier_render = "<span style='color:#ec4899; font-weight:bold;'>👑 Single</span>"
+                elif av in pr5: status_tier_render = "<span style='color:#a855f7; font-weight:bold;'>🔥 VVIP-5</span>"
+                elif av in pr9: status_tier_render = "<span style='color:#d97706; font-weight:bold;'>💎 Super-9</span>"
+                elif av in pr16: status_tier_render = "<span style='color:#2563eb; font-weight:bold;'>✅ Stable-16</span>"
+                
+                # Scan all shifts inside remaining pool ONLY
+                for s in shifts_list:
+                    if s in df.columns:
+                        val = str(df.iloc[i].get(s, "XX")).split('.')[0]
+                        if val.isdigit():
+                            v_pad = str(int(val)).zfill(2)
+                            if v_pad in row_rem_pool:
+                                passed_history_list.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
+            
+            # CONDITION 2: Blocked view active -> Scan strictly from blocked pool & sub-tiers
+            else:
+                rb25, rb16, rb9, rb1 = calculate_blocked_pool_tiers(row_blk_pool, df, i, target_s)
+                
+                # Check status tracking
+                if av in rb1: status_tier_render = "<span style='color:#b91c1c; font-weight:bold;'>👑 Single</span>"
+                elif av in rb9: status_tier_render = "<span style='color:#eab308; font-weight:bold;'>💎 Super-9</span>"
+                elif av in rb16: status_tier_render = "<span style='color:#f97316; font-weight:bold;'>✅ Stable-16</span>"
+                elif av in rb25: status_tier_render = "<span style='color:#991b1b; font-weight:bold;'>📦 Stable-25</span>"
+                
+                # Scan all shifts inside blocked pool ONLY
+                for s in shifts_list:
+                    if s in df.columns:
+                        val = str(df.iloc[i].get(s, "XX")).split('.')[0]
+                        if val.isdigit():
+                            v_pad = str(int(val)).zfill(2)
+                            if v_pad in row_blk_pool:
+                                passed_history_list.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
         
         hist.append({
             "History Date": f"<b>{df.iloc[i]['DATE']}</b>",
             "Target Res": f"<b>{actual_opened}</b>",
-            "🟢 Remaining (16) History Pass": ", ".join(rem_passed) if rem_passed else "<b>None</b>",
-            "🔴 Blocked (25) History Pass": ", ".join(blk_passed) if blk_passed else "<b>None</b>",
-            "Engine-1 (Remaining Tier)": h_rem,
-            "Engine-2 (Blocked Tier)": h_blk
+            f"🎯 {st.session_state.active_engine} Pool History Pass": ", ".join(passed_history_list) if passed_history_list else "<b>None</b>",
+            "Active Tier Status": status_tier_render
         })
         
     df_hist = pd.DataFrame(hist)
     st.write(df_hist.to_html(escape=False, index=False), unsafe_allow_html=True)
-                   
+    
