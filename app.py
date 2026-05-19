@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page Configuration
-st.set_page_config(page_title="MAYA v49.7 - Ultimate Matrix Controller", layout="wide")
+st.set_page_config(page_title="MAYA v49.8 - Strict Slicing Lock Engine", layout="wide")
 
 # --- 32 PATTERNS ENGINE ---
 def generate_32_patterns(base_val):
@@ -180,19 +180,17 @@ if uploaded_file:
     
     all_dates = df['DATE'].astype(str).unique().tolist()
     
-    # Dynamic Controls Layout
-    st.sidebar.header("🎛️ Size & Matrix Layout Controllers")
+    # Sidebar controllers
+    st.sidebar.header("🎛️ Layout Controllers")
     box_size = st.sidebar.slider("Chakor Box Size (Font Size)", min_value=14, max_value=36, value=22)
-    grid_columns_count = st.sidebar.slider("Grid Base Columns count", min_value=4, max_value=12, value=10)
+    grid_columns_count = st.sidebar.slider("Grid Columns Count", min_value=4, max_value=12, value=10)
     
-    # Custom CSS injection for dynamic size controller
     st.markdown(f"""
         <style>
         .live-res {{ background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #fbbf24; }}
         .universal-box {{ background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid #38bdf8; font-weight: bold; font-size: 20px; margin-bottom: 20px; }}
         .summary-bar {{ background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 5px solid #ef4444; margin: 15px 0; font-weight: bold; font-size: 18px; color: #1e293b; }}
         
-        /* Dynamic CSS bindings connected directly to variables */
         .grid-square-dynamic {{ display: grid; grid-template-columns: repeat({grid_columns_count}, 1fr); gap: 10px; width: 100%; margin: 15px 0; }}
         .chakor-item-remaining {{ background: #dcfce7; color: #15803d; padding: 12px; border-radius: 8px; font-size: {box_size}px; font-weight: bold; text-align: center; border: 2px solid #bbf7d0; }}
         .chakor-item-blocked {{ background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: {box_size}px; font-weight: bold; text-align: center; border: 2px solid #fecaca; }}
@@ -205,58 +203,59 @@ if uploaded_file:
     idx = df[df['DATE'].astype(str) == sel_date].index[0]
     shifts_list = ['DS', 'FB', 'GB', 'GL', 'DB', 'SG']
     
-    # Core calculations
+    # Run base data streams
     remaining_target_pool, universal_blocked_pool = calculate_inverse_universe(df, idx, shifts_list)
     r16, r9, r5, r1 = calculate_4_tiers_from_pool(remaining_target_pool, df, idx, target_s)
     b25, b16, b9, b1 = calculate_blocked_pool_tiers(universal_blocked_pool, df, idx, target_s)
 
-    # --- THE DROPDOWN SELECTION FILTERS BLOCK ---
+    # --- DROPDOWN SELECTORS BLOCK ---
     st.write("---")
-    st.subheader("🎯 DROPDOWN MATRIX CONTROLLERS")
+    st.subheader("🎯 STRICT MATRIX FILTER CONTROLLERS")
     col_sel1, col_sel2 = st.columns(2)
     
     with col_sel1:
-        e1_option = st.selectbox("🟢 Filter Engine 1 (Remaining Universe):", 
-                                 options=["Full Pool (35 Jodis)", "Stable 16", "Super Hit 9", "VVIP 5", "Single Core 1"])
+        e1_option = st.selectbox("🟢 Engine 1 Selection (Remaining Groups):", 
+                                 options=["Stable 16", "Super Hit 9", "VVIP 5", "Single Core 1", "Full Pool (35 Jodis)"])
     with col_sel2:
-        e2_option = st.selectbox("🔴 Filter Engine 2 (Blocked Universe):", 
-                                 options=["Full Pool (65 Jodis)", "Stable 25", "Stable 16", "Super Hit 9", "Single Core 1"])
+        e2_option = st.selectbox("🔴 Engine 2 Selection (Blocked Groups):", 
+                                 options=["Stable 25", "Stable 16", "Super Hit 9", "Single Core 1", "Full Pool (65 Jodis)"])
 
-    # Map selected options to strict arrays
+    # Mapping references to strict variable sets
     e1_map = {"Full Pool (35 Jodis)": remaining_target_pool, "Stable 16": r16, "Super Hit 9": r9, "VVIP 5": r5, "Single Core 1": r1}
     e2_map = {"Full Pool (65 Jodis)": universal_blocked_pool, "Stable 25": b25, "Stable 16": b16, "Super Hit 9": b9, "Single Core 1": b1}
     
     active_e1_array = e1_map[e1_option]
     active_e2_array = e2_map[e2_option]
 
-    # --- RENDERING GRIDS ---
-    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🟢 Active Target Display: {e1_option} ({len(active_e1_array)} Jodis)</div>', unsafe_allow_html=True)
+    # Display dynamic grids matching dropdown strictly
+    st.markdown(f'<div class="summary-bar" style="border-left-color: #10b981;">🟢 Active Target: {e1_option} ({len(active_e1_array)} Jodis Active)</div>', unsafe_allow_html=True)
     g_html = '<div class="grid-square-dynamic">'
     for num in active_e1_array: g_html += f'<div class="chakor-item-remaining">{num}</div>'
     st.markdown(g_html+'</div>', unsafe_allow_html=True)
 
-    st.markdown(f'<div class="summary-bar">🚫 Active Blocked Display: {e2_option} ({len(active_e2_array)} Jodis)</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="summary-bar">🚫 Active Blocked Target: {e2_option} ({len(active_e2_array)} Jodis Active)</div>', unsafe_allow_html=True)
     g_html = '<div class="grid-square-dynamic">'
     for num in active_e2_array: g_html += f'<div class="chakor-item-blocked">{num}</div>'
     st.markdown(g_html+'</div>', unsafe_allow_html=True)
 
-    # --- ADVANCED DYNAMIC MATRIX BACKTEST TABLE ---
+    # --- STRICT DRIVEN SYNCHRONIZED BACKTEST TABLE ---
     st.write("---")
     st.subheader("📜 Strict Synchronized History Validation Backtest")
-    st.caption("Yeh table aapke upar dropdown mein select kiye gaye options ke mutabik hi numbers ko scan karke result dikhaegi.")
+    st.caption("Yeh table aapke dropdown selection ke mutabik hi absolute results ko scan karegi.")
     
     hist = []
     for i in range(max(0, idx - 10), idx + 1):
         row_rem, row_blk = calculate_inverse_universe(df, i, shifts_list)
         
-        # Calculate sub-tiers dynamically for historical row pointer
+        # Calculate dynamic timeline sub-tiers for historical row pointers
         hr16, hr9, hr5, hr1 = calculate_4_tiers_from_pool(row_rem, df, i, target_s)
         hb25, hb16, hb9, hb1 = calculate_blocked_pool_tiers(row_blk, df, i, target_s)
         
-        # Mapping pointers according to selections
+        # ABSOLUTE MATCH ARRAYS ENGINE LOCK
         h_e1_map = {"Full Pool (35 Jodis)": row_rem, "Stable 16": hr16, "Super Hit 9": hr9, "VVIP 5": hr5, "Single Core 1": hr1}
         h_e2_map = {"Full Pool (65 Jodis)": row_blk, "Stable 25": hb25, "Stable 16": hb16, "Super Hit 9": hb9, "Single Core 1": hb1}
         
+        # Fetching strictly the selection-driven limited array
         loop_e1_target_set = h_e1_map[e1_option]
         loop_e2_target_set = h_e2_map[e2_option]
         
@@ -267,6 +266,7 @@ if uploaded_file:
                 if val.isdigit():
                     v_pad = str(int(val)).zfill(2)
                     
+                    # STRICTOR BOUNDARY RULE CHECK: Only append if inside the limited dropdown slice
                     if v_pad in loop_e1_target_set:
                         rem_passed.append(f"<span style='color:#16a34a; font-weight:bold;'>{s}:{v_pad}</span>")
                     if v_pad in loop_e2_target_set:
@@ -274,8 +274,8 @@ if uploaded_file:
                         
         hist.append({
             "History Date": f"<b>{df.iloc[i]['DATE']}</b>",
-            f"🟢 Remaining: {e1_option} Pass": ", ".join(rem_passed) if rem_passed else "<b>None</b>",
-            f"🔴 Blocked: {e2_option} Pass": ", ".join(blk_passed) if blk_passed else "<b>None</b>"
+            f"🟢 Remaining ({len(loop_e1_target_set)} Jodis) Pass": ", ".join(rem_passed) if rem_passed else "<b>None</b>",
+            f"🔴 Blocked ({len(loop_e2_target_set)} Jodis) Pass": ", ".join(blk_passed) if blk_passed else "<b>None</b>"
         })
         
     df_hist = pd.DataFrame(hist)
@@ -292,4 +292,4 @@ if uploaded_file:
         st.write(f"Number **{s_pad}** status for selected date:")
         st.write(f"Engine 1 Cluster: {in_rem}")
         st.write(f"Engine 2 Cluster: {in_blk}")
-    
+        
